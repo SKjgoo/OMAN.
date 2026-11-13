@@ -36,8 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <p>${d.summary}</p>
       <div class="btn-row" style="margin-top:18px">
         ${d.vr ? `<a class="btn" href="vr.html?id=${d.id}">جولة افتراضية 360°</a>` : ''}
-        <a class="btn ghost" href="${dirLink(d)}" target="_blank" rel="noopener">الاتجاهات</a>
-        <a class="btn ghost" href="trip.html?to=${'d:' + d.id}">خطّط الطريق إليها</a>
+        <a class="btn ghost" href="${dirLink(d)}" target="_blank" rel="noopener">الاتجاهات إلى الموقع</a>
+        <a class="btn ghost" href="trip.html?to=${'d:' + d.id}">خطّط الطريق إلى الموقع</a>
         <button class="btn ghost" id="share" type="button">↗ مشاركة</button>
       </div>
     </div>

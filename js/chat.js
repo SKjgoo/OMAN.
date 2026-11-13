@@ -217,7 +217,7 @@
   };
   function A_card(c) { return A.card(c); }
   const destCard = (d) => ({ title: d.name, sub: govName(d.gov) + ' · ' + catLabel(d.cat), text: d.summary, href: 'destination.html?id=' + d.id, img: 'images/' + d.id + '.jpg' });
-  const destLinks = (d) => [{ t: 'تفاصيل الوجهة', href: 'destination.html?id=' + d.id }, { t: 'على الخريطة', href: 'map.html?id=' + d.id }, { t: 'الاتجاهات', href: dirLink(d) }]
+  const destLinks = (d) => [{ t: 'تفاصيل الوجهة', href: 'destination.html?id=' + d.id }, { t: 'على الخريطة', href: 'map.html?id=' + d.id }, { t: 'الاتجاهات إلى الموقع', href: dirLink(d) }]
     .concat(d.vr ? [{ t: 'جولة 360°', href: 'vr.html?id=' + d.id }] : []);
   const followUps = (d) => ['أفضل وقت لزيارة ' + d.name.split(':')[0].split('–')[0].trim() + '؟', 'كم تستغرق الزيارة؟', 'نصائح للزيارة', 'فنادق قريبة', 'كيف أصل؟'];
 

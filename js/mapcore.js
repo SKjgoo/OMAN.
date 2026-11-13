@@ -30,7 +30,7 @@ function popupHtml(d, opts) {
     <p>${d.summary}</p>
     <div class="pop-actions">
       ${hideMore ? '' : `<a href="destination.html?id=${d.id}">التفاصيل</a>`}
-      <a class="alt" href="${dirLink(d)}" target="_blank" rel="noopener">الاتجاهات</a>
+      <a class="alt" href="${dirLink(d)}" target="_blank" rel="noopener">الاتجاهات إلى الموقع</a>
       ${d.vr ? `<a href="vr.html?id=${d.id}">جولة VR</a>` : ''}
     </div>`;
 }

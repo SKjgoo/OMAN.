@@ -57,8 +57,7 @@ const Voice = (() => {
   function button(getText, opts) {
     opts = opts || {};
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'speak-btn notranslate' + (opts.cls ? ' ' + opts.cls : '');
-    b.translate = false;
+    b.type = 'button'; b.className = 'speak-btn' + (opts.cls ? ' ' + opts.cls : '');
     b.dataset.label = opts.label || 'استمع'; b.dataset.stop = opts.stopLabel || 'إيقاف';
     b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-label', 'القراءة الصوتية');
     b.innerHTML = '<span aria-hidden="true">🔊</span> <span class="sp-t">' + b.dataset.label + '</span>';

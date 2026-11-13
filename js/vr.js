@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="btn-row">
         <a class="btn small dark" href="destination.html?id=${d.id}">تفاصيل الوجهة</a>
         <a class="btn small" href="map.html?id=${d.id}">على الخريطة</a>
-        <a class="btn small ghost" style="color:var(--night)" href="${dirLink(d)}" target="_blank" rel="noopener">الاتجاهات</a>
+        <a class="btn small ghost" style="color:var(--night)" href="${dirLink(d)}" target="_blank" rel="noopener">الاتجاهات إلى الموقع</a>
       </div>`;
 
     const url = vrImage(d);
