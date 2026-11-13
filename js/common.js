@@ -96,7 +96,9 @@ if (onProxy()) {
   }, true);
 }
 if (getLang() !== 'ar') {
-  document.documentElement.lang = getLang();  // تبقى الواجهة (الشريط الجانبي) كما هي ويتبدّل اتجاه كل فقرة تلقائيًا
+  document.documentElement.lang = getLang();
+  // اتجاه الصفحة يتبع اللغة: يسار-يمين للإنجليزية وغيرها، ويبقى يمين-يسار للأوردو والفارسية
+  document.documentElement.dir = ['ur', 'fa', 'ar'].includes(getLang()) ? 'rtl' : 'ltr';
   document.documentElement.classList.add('is-en');
 }
 function loadTranslator() {
