@@ -405,6 +405,7 @@ function buildUploader(esc) {
 /* زر خدمة العملاء العائم: يفتح الرابط في تبويب جديد */
 const SUPPORT_URL = 'https://skjgoo.github.io/-/';
 function buildSupport() {
+  return; // تم حذف زر خدمة العملاء العائم
   if (document.querySelector('.support-fab')) return;
   const a = document.createElement('a');
   a.className = 'support-fab';
@@ -425,7 +426,6 @@ window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); defe
 document.addEventListener('DOMContentLoaded', () => {
   registerSW();
   buildChrome();
-  buildSupport();
   loadTranslator();
   buildTicker();
   omaniDecor();
