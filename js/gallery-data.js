@@ -219,6 +219,58 @@ const GALLERY = {
     {
       "src": "images/gallery/bimmah/1.jpg",
       "cap": "حفرة بمّه"
+    },
+    {
+          "src": "images/gallery/bimmah/2.jpg",
+          "cap": "حفرة بمّه: جدار الحفرة والماء"
+    },
+    {
+          "src": "images/gallery/bimmah/3.jpg",
+          "cap": "منظر عام للحفرة والدرج"
+    },
+    {
+          "src": "images/gallery/bimmah/4.jpg",
+          "cap": "الدرج والكهف"
+    },
+    {
+          "src": "images/gallery/bimmah/5.jpg",
+          "cap": "مدخل الكهف تحت الصخرة"
+    },
+    {
+          "src": "images/gallery/bimmah/6.jpg",
+          "cap": "سقف الكهف"
+    },
+    {
+          "src": "images/gallery/bimmah/7.jpg",
+          "cap": "الماء والجالسون على الحافة"
+    },
+    {
+          "src": "images/gallery/bimmah/8.jpg",
+          "cap": "الحفرة والدرج من الحافة"
+    },
+    {
+          "src": "images/gallery/bimmah/9.jpg",
+          "cap": "الدرج وصخور الحافة"
+    },
+    {
+          "src": "images/gallery/bimmah/10.jpg",
+          "cap": "صخور الحافة"
+    },
+    {
+          "src": "images/gallery/bimmah/11.jpg",
+          "cap": "الحافة الصخرية"
+    },
+    {
+          "src": "images/gallery/bimmah/12.jpg",
+          "cap": "الكهف على الجانب"
+    },
+    {
+          "src": "images/gallery/bimmah/13.jpg",
+          "cap": "تجويف الكهف"
+    },
+    {
+          "src": "images/gallery/bimmah/14.jpg",
+          "cap": "الماء عند الكهف"
     }
   ],
   "old-muscat": [
