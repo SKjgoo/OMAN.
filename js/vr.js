@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
       hideTimer = setTimeout(hideOverlay, 2500);
     };
     img.onerror = () => {
-      showOverlay(`لا توجد صورة 360° لهذه الوجهة بعد.<br><small>ضع الصورة في: <code dir="ltr">${url}</code></small>`, false);
+      showOverlay('لا توجد صورة 360° حقيقية لهذه الوجهة بعد. شاهد الصور الحقيقية أدناه.', false);
     };
     img.src = url;
     const i = tours.findIndex(t => t.id === d.id);
