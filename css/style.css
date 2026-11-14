@@ -813,12 +813,13 @@ body.cm-open{overflow:hidden}
 html[dir="ltr"] .tk-move{direction:ltr;animation-name:tk3}
 
 /* ===== مساعد الطوارئ ===== */
-.sos-fab{position:fixed;inset-inline-end:18px;bottom:118px;z-index:61;width:64px;height:64px;border-radius:50%;border:3px solid #fff;background:#c0392b;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;box-shadow:0 6px 16px rgba(0,0,0,.35);font-family:inherit;transition:transform .2s}
+.sos-fab{position:fixed;inset-inline-end:28px;bottom:110px;z-index:61;width:64px;height:64px;border-radius:50%;border:3px solid #fff;background:#c0392b;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;box-shadow:0 6px 16px rgba(0,0,0,.35);font-family:inherit;transition:transform .2s}
 .sos-fab:hover,.sos-fab:focus-visible{transform:scale(1.08)}
 .sos-fab:focus-visible{outline:3px solid #e3b95a;outline-offset:3px}
 .sos-fab-t{font-weight:800;font-size:1.05rem;letter-spacing:.5px}.sos-fab-s{font-size:.62rem;opacity:.95}
-@media (max-width:760px){.sos-fab{inset-inline-end:12px;bottom:90px;width:56px;height:56px}}
-body[data-page="chat"] .sos-fab{bottom:176px}
+@media (max-width:760px){.sos-fab{inset-inline-end:16px;bottom:84px;width:56px;height:56px}}
+body[data-page="chat"] .sos-fab{bottom:188px}
+@media (max-width:760px){body[data-page="chat"] .sos-fab{bottom:168px}}
 @media print{.sos-fab{display:none}}
 .sosw-lock{overflow:hidden}
 .sosw{position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.6);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:14px 10px}

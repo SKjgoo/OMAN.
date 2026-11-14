@@ -101,7 +101,7 @@ if (onProxy()) {
     a.href = u.href;
   }, true);
 }
-(function(){var s=document.createElement('script');s.src='js/emergency.js?v=33';s.defer=true;document.head.appendChild(s);})();
+(function(){var s=document.createElement('script');s.src='js/emergency.js?v=34';s.defer=true;document.head.appendChild(s);})();
 if (getLang() === 'en' && !onProxy()) {
   document.write('<script src="js/i18n-en.js?v=27"><\/script><script src="js/i18n.js?v=27"><\/script>');
 }
@@ -426,6 +426,7 @@ window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); defe
 document.addEventListener('DOMContentLoaded', () => {
   registerSW();
   buildChrome();
+  buildSupport();
   loadTranslator();
   buildTicker();
   omaniDecor();
