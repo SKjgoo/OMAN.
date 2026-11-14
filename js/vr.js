@@ -8,6 +8,7 @@ const REAL_360 = {
   'grand-mosque': 'مشهد 360° حقيقي لساحة جامع السلطان قابوس الأكبر، مركّب من لقطات Google Street View (أغسطس 2016، المصوّر: Ayyagari Srikanth).',
   'royal-opera': 'مشهد 360° حقيقي لحدائق وساحة دار الأوبرا السلطانية مسقط، مركّب من لقطات Google Street View (يناير 2023، المصوّر: Wolfgang Sprung).',
   'mutrah': 'مشهد 360° حقيقي لمدخل سوق مطرح وكورنيش مطرح (طريق درسيت)، مركّب من لقطات Google Street View (فبراير 2024).',
+  bimmah: 'مشهد 360° تقريبي لحفرة بمّه، مركّب من صور حقيقية (قد تظهر فيه فراغات أو تشوّهات عند الأطراف).',
   'old-muscat': 'مشهد 360° حقيقي لساحة قصر العلم العامر في مسقط القديمة، مركّب من لقطات Google Street View (فبراير 2024، المصوّر: Amitto Karim).'
 };
 
@@ -124,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <h2>${c.icon} ${d.name}</h2>
       <p>${d.desc[0]}</p>
       <p class="muted" style="font-size:.85rem">${REAL_360[d.id] || 'مشهد 360° توضيحي مرسوم بالحاسوب لأجواء المكان.'}</p>
-      ${(typeof GALLERY !== 'undefined' && GALLERY[d.id] && GALLERY[d.id].length) ? `<div class="vr-photos">${GALLERY[d.id].map(g => `<a href="${g.src}" target="_blank" rel="noopener" title="${g.cap || d.name}"><img src="${g.src}" alt="${g.cap || d.name}" loading="lazy"></a>`).join('')}</div>` : ''}
+      ${(d.id !== 'bimmah' && typeof GALLERY !== 'undefined' && GALLERY[d.id] && GALLERY[d.id].length) ? `<div class="vr-photos">${GALLERY[d.id].map(g => `<a href="${g.src}" target="_blank" rel="noopener" title="${g.cap || d.name}"><img src="${g.src}" alt="${g.cap || d.name}" loading="lazy"></a>`).join('')}</div>` : ''}
       <div class="btn-row">
         <a class="btn small dark" href="destination.html?id=${d.id}">تفاصيل الوجهة</a>
         <a class="btn small" href="map.html?id=${d.id}">على الخريطة</a>
