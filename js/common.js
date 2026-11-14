@@ -41,7 +41,7 @@ function getLang() {
     return 'en';
   }
   if (/^https?:$/.test(location.protocol) && !/^(localhost|127\.)/.test(location.hostname)) {
-    try { localStorage.removeItem('lang'); } catch (e) { /* */ }   // على الموقع المنشور: العربية دائمًا، والترجمة عبر translate.goog
+    try { if (new URLSearchParams(location.search).get('lang') === 'en') localStorage.setItem('lang', 'en'); if (localStorage.getItem('lang') === 'en') return 'en'; localStorage.removeItem('lang'); } catch (e) { /* */ }   // الإنجليزية مدمجة؛ باقي اللغات عبر translate.goog
     return 'ar';
   }
   try { const k = localStorage.getItem('lang'); return langKnown(k) ? k : 'ar'; }
@@ -58,8 +58,9 @@ function setLang(l) {
   if (!langKnown(l)) return;
   const web = /^https?:$/.test(location.protocol);
   if (onProxy()) {
-    if (l === 'ar') {                      // الرجوع للعربية: افتح الموقع الأصلي
+    if (l === 'ar' || l === 'en') {        // العربية أو الإنجليزية المدمجة: افتح الموقع الأصلي
       const u = new URL(location.href);
+      if (l === 'en') u.searchParams.set('lang', 'en');
       ['_x_tr_sl', '_x_tr_tl', '_x_tr_hl', '_x_tr_pto', '_x_tr_hist'].forEach(k => u.searchParams.delete(k));
       try { sessionStorage.removeItem('trl'); } catch (e) { /* */ }
       location.href = 'https://' + origHost() + u.pathname + u.search + u.hash;
@@ -69,6 +70,11 @@ function setLang(l) {
       location.href = u.href;
     }
     return;
+  }
+  if (l === 'en' || l === 'ar') {          // مدمجة: بدون قوقل
+    try { l === 'en' ? localStorage.setItem('lang', 'en') : localStorage.removeItem('lang'); } catch (e) { /* */ }
+    const c = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'; document.cookie = c;
+    location.reload(); return;
   }
   if (l !== 'ar' && web && !/^(localhost|127\.)/.test(location.hostname)) {
     location.href = proxyUrl(l); return;   // أوثق طريقة على جوال سفاري
@@ -95,6 +101,9 @@ if (onProxy()) {
     a.href = u.href;
   }, true);
 }
+if (getLang() === 'en' && !onProxy()) {
+  document.write('<script src="js/i18n-en.js?v=27"><\/script><script src="js/i18n.js?v=27"><\/script>');
+}
 if (getLang() !== 'ar') {
   document.documentElement.lang = getLang();
   // اتجاه الصفحة يتبع اللغة: يسار-يمين للإنجليزية وغيرها، ويبقى يمين-يسار للأوردو والفارسية
@@ -102,7 +111,7 @@ if (getLang() !== 'ar') {
   document.documentElement.classList.add('is-en');
 }
 function loadTranslator() {
-  if (getLang() === 'ar' || onProxy()) return;
+  if (getLang() === 'ar' || onProxy() || (getLang() === 'en' && window.I18N_EN)) return;
   const box = document.createElement('div');
   box.id = 'google_translate_element'; box.style.display = 'none';
   document.body.appendChild(box);
@@ -277,7 +286,7 @@ function buildChrome() {
             <p>الرقم الموحّد للطوارئ في السلطنة: <b dir="ltr">9999</b></p>
           </div>
         </div>
-        <div class="foot-bottom"><a href="about.html">عن المشروع</a> · © ${new Date().getFullYear()} اكتشف عُمان — خرائط © مساهمو OpenStreetMap</div>
+        <div class="foot-bottom"><span class="notranslate" translate="no" dir="ltr" style="display:block;margin-bottom:6px;opacity:.8;font-size:.85em">Other languages: Safari ▸ aA ▸ Translate Website · Chrome ▸ ⋮ ▸ Translate</span><a href="about.html">عن المشروع</a> · © ${new Date().getFullYear()} اكتشف عُمان — خرائط © مساهمو OpenStreetMap</div>
       </div>
     </footer>`;
   }

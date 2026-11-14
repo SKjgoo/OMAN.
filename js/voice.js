@@ -30,6 +30,7 @@ const Voice = (() => {
   }
   function speak(text, btn, onNoVoice) {
     if (!ok) { if (onNoVoice) onNoVoice('متصفحك لا يدعم القراءة الصوتية.'); return; }
+    if (window.I18N && typeof text === 'string') text = I18N.tr(text);
     const was = current === btn;
     stop();
     if (was) return;
