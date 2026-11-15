@@ -27,6 +27,9 @@ const LANGS = [
   ['es', 'Español', 'es-ES'], ['tr', 'Türkçe', 'tr-TR'], ['fa', 'فارسی', 'fa-IR'], ['it', 'Italiano', 'it-IT'],
   ['ja', '日本語', 'ja-JP'], ['ko', '한국어', 'ko-KR'], ['id', 'Indonesia', 'id-ID'], ['bn', 'বাংলা', 'bn-BD'], ['ml', 'മലയാളം', 'ml-IN']
 ];
+/* لغات بترجمة مدمجة (بدون قوقل): ملف js/i18n-<لغة>.js */
+const PACKS = ['en', 'de'];
+const isPack = (c) => PACKS.includes(c);
 const TG = '.translate.goog';
 const onProxy = () => location.hostname.endsWith(TG);
 const langKnown = (c) => LANGS.some(l => l[0] === c);
@@ -41,7 +44,7 @@ function getLang() {
     return 'en';
   }
   if (/^https?:$/.test(location.protocol) && !/^(localhost|127\.)/.test(location.hostname)) {
-    try { if (new URLSearchParams(location.search).get('lang') === 'en') localStorage.setItem('lang', 'en'); if (localStorage.getItem('lang') === 'en') return 'en'; localStorage.removeItem('lang'); } catch (e) { /* */ }   // الإنجليزية مدمجة؛ باقي اللغات عبر translate.goog
+    try { const q = new URLSearchParams(location.search).get('lang'); if (isPack(q)) localStorage.setItem('lang', q); const k = localStorage.getItem('lang'); if (isPack(k)) return k; localStorage.removeItem('lang'); } catch (e) { /* */ }   // الإنجليزية مدمجة؛ باقي اللغات عبر translate.goog
     return 'ar';
   }
   try { const k = localStorage.getItem('lang'); return langKnown(k) ? k : 'ar'; }
@@ -58,9 +61,9 @@ function setLang(l) {
   if (!langKnown(l)) return;
   const web = /^https?:$/.test(location.protocol);
   if (onProxy()) {
-    if (l === 'ar' || l === 'en') {        // العربية أو الإنجليزية المدمجة: افتح الموقع الأصلي
+    if (l === 'ar' || isPack(l)) {        // العربية أو لغة مدمجة: افتح الموقع الأصلي
       const u = new URL(location.href);
-      if (l === 'en') u.searchParams.set('lang', 'en');
+      if (l !== 'ar') u.searchParams.set('lang', l);
       ['_x_tr_sl', '_x_tr_tl', '_x_tr_hl', '_x_tr_pto', '_x_tr_hist'].forEach(k => u.searchParams.delete(k));
       try { sessionStorage.removeItem('trl'); } catch (e) { /* */ }
       location.href = 'https://' + origHost() + u.pathname + u.search + u.hash;
@@ -71,8 +74,8 @@ function setLang(l) {
     }
     return;
   }
-  if (l === 'en' || l === 'ar') {          // مدمجة: بدون قوقل
-    try { l === 'en' ? localStorage.setItem('lang', 'en') : localStorage.removeItem('lang'); } catch (e) { /* */ }
+  if (isPack(l) || l === 'ar') {          // مدمجة: بدون قوقل
+    try { l !== 'ar' ? localStorage.setItem('lang', l) : localStorage.removeItem('lang'); } catch (e) { /* */ }
     const c = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'; document.cookie = c;
     location.reload(); return;
   }
@@ -101,9 +104,9 @@ if (onProxy()) {
     a.href = u.href;
   }, true);
 }
-(function(){var s=document.createElement('script');s.src='js/emergency.js?v=34';s.defer=true;document.head.appendChild(s);})();
-if (getLang() === 'en' && !onProxy()) {
-  document.write('<script src="js/i18n-en.js?v=27"><\/script><script src="js/i18n.js?v=27"><\/script>');
+(function(){var s=document.createElement('script');s.src='js/emergency.js?v=35';s.defer=true;document.head.appendChild(s);})();
+if (isPack(getLang()) && !onProxy()) {
+  document.write('<script src="js/i18n-' + getLang() + '.js?v=35"><\/script><script src="js/i18n.js?v=35"><\/script>');
 }
 if (getLang() !== 'ar') {
   document.documentElement.lang = getLang();
@@ -112,7 +115,7 @@ if (getLang() !== 'ar') {
   document.documentElement.classList.add('is-en');
 }
 function loadTranslator() {
-  if (getLang() === 'ar' || onProxy() || (getLang() === 'en' && window.I18N_EN)) return;
+  if (getLang() === 'ar' || onProxy() || (isPack(getLang()) && window.I18N_DICT)) return;
   const box = document.createElement('div');
   box.id = 'google_translate_element'; box.style.display = 'none';
   document.body.appendChild(box);

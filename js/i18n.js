@@ -1,6 +1,6 @@
 /* ترجمة مدمجة للإنجليزية: تستبدل النصوص العربية بما يقابلها من القاموس (بدون خدمات خارجية) */
 (function () {
-  const D = window.I18N_EN || {};
+  const D = window.I18N_DICT || {};
   const keys = Object.keys(D).sort((a, b) => b.length - a.length);
   if (!keys.length) return;
   const esc = (s) => s.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&');

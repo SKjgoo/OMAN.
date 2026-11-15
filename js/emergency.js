@@ -1,7 +1,7 @@
 /* ===== مساعد الطوارئ: تحديد الموقع ← المنطقة ← نوع الحالة ← خطوات + اتصال + مشاركة الموقع ===== */
 (function () {
   'use strict';
-  const EN = () => { try { return typeof getLang === 'function' && getLang() === 'en'; } catch (e) { return false; } };
+  const EN = () => { try { return typeof getLang === 'function' && getLang() !== 'ar'; } catch (e) { return false; } };
   const T = (ar, en) => (EN() ? en : ar);
   const esc = (t) => String(t == null ? '' : t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const NUM = '9999';
