@@ -7,22 +7,23 @@
   const AR = /[؀-ۿ]/;
   const re = new RegExp('(?<![\\u0621-\\u063F\\u0641-\\u065F\\u0670-\\u06D3])(?:' + keys.map(esc).join('|') + ')(?![\\u0621-\\u063F\\u0641-\\u065F\\u0670-\\u06D3])', 'g');
   const tr = (s) => (s && AR.test(s)) ? s.replace(re, (m) => D[m]) : s;
+  const seen = new WeakMap();   /* ما أنتجته الترجمة: لا تُعاد ترجمته (مهم للأردو والفارسية بحرف عربي) */
   const ATTRS = ['placeholder', 'title', 'aria-label', 'alt', 'data-label', 'data-stop'];
   const skipEl = (el) => !el || (el.closest && el.closest('script,style,textarea,.lang-pick,[translate="no"]'));
   function node(n) {
     if (n.nodeType === 3) {
-      if (n.parentNode && !skipEl(n.parentNode)) { const v = tr(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; }
+      if (n.parentNode && !skipEl(n.parentNode)) { if (seen.get(n) === n.nodeValue) return; const v = tr(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; seen.set(n, v); }
     } else if (n.nodeType === 1) {
       if (skipEl(n)) return;
-      ATTRS.forEach((a) => { const v = n.getAttribute(a); if (v && AR.test(v)) { const t = tr(v); if (t !== v) n.setAttribute(a, t); } });
+      ATTRS.forEach((a) => { const v = n.getAttribute(a); if (v && AR.test(v)) { const k = seen.get(n) || {}; if (k[a] === v) return; const t = tr(v); if (t !== v) n.setAttribute(a, t); k[a] = t; seen.set(n, k); } });
       if (n.tagName === 'OPTION' || n.tagName === 'BUTTON' || n.tagName === 'INPUT') { /* handled via text/attrs */ }
       if (n.tagName === 'INPUT' && /^(button|submit)$/.test(n.type) && AR.test(n.value)) n.value = tr(n.value);
       n.childNodes.forEach(node);
     }
   }
   function all() {
-    if (document.title) document.title = tr(document.title);
-    document.querySelectorAll('meta[name=description],meta[property="og:title"],meta[property="og:description"]').forEach((m) => { m.content = tr(m.content); });
+    if (document.title && seen.get(document) !== document.title) { const t = tr(document.title); document.title = t; seen.set(document, t); }
+    document.querySelectorAll('meta[name=description],meta[property="og:title"],meta[property="og:description"]').forEach((m) => { if (seen.get(m) === m.content) return; const t = tr(m.content); m.content = t; seen.set(m, t); });
     if (document.body) node(document.body);
   }
   let busy = false;
