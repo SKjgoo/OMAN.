@@ -28,7 +28,7 @@ const LANGS = [
   ['ja', '日本語', 'ja-JP'], ['ko', '한국어', 'ko-KR'], ['id', 'Indonesia', 'id-ID'], ['bn', 'বাংলা', 'bn-BD'], ['ml', 'മലയാളം', 'ml-IN']
 ];
 /* لغات بترجمة مدمجة (بدون قوقل): ملف js/i18n-<لغة>.js */
-const PACKS = ['en', 'de', 'fr', 'hi', 'ru', 'ur'];
+const PACKS = ['en', 'de', 'fr', 'hi', 'ru', 'ur', 'zh-CN'];
 const isPack = (c) => PACKS.includes(c);
 const TG = '.translate.goog';
 const onProxy = () => location.hostname.endsWith(TG);
@@ -104,9 +104,9 @@ if (onProxy()) {
     a.href = u.href;
   }, true);
 }
-(function(){var s=document.createElement('script');s.src='js/emergency.js?v=39';s.defer=true;document.head.appendChild(s);})();
+(function(){var s=document.createElement('script');s.src='js/emergency.js?v=40';s.defer=true;document.head.appendChild(s);})();
 if (isPack(getLang()) && !onProxy()) {
-  document.write('<script src="js/i18n-' + getLang() + '.js?v=39"><\/script><script src="js/i18n.js?v=39"><\/script>');
+  document.write('<script src="js/i18n-' + getLang() + '.js?v=40"><\/script><script src="js/i18n.js?v=40"><\/script>');
 }
 if (getLang() !== 'ar') {
   document.documentElement.lang = getLang();
