@@ -6,7 +6,11 @@
   const esc = (s) => s.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&');
   const AR = /[؀-ۿ]/;
   const re = new RegExp('(?<![\\u0621-\\u063F\\u0641-\\u065F\\u0670-\\u06D3])(?:' + keys.map(esc).join('|') + ')(?![\\u0621-\\u063F\\u0641-\\u065F\\u0670-\\u06D3])', 'g');
-  const tr = (s) => (s && AR.test(s)) ? s.replace(re, (m) => D[m]) : s;
+  let LG = 'en'; try { LG = getLang(); } catch (e) { /* */ }
+  const KEEP_AR = /^(ur|fa|ar)/.test(LG);                    /* هذه اللغات تكتب الفاصلة العربية */
+  const COMMA = /^zh/.test(LG) ? '、' : ', ';
+  const fixComma = (t) => (KEEP_AR ? t : t.replace(/\s*،\s*/g, COMMA));
+  const tr = (s) => (s && AR.test(s)) ? fixComma(s.replace(re, (m) => D[m])) : s;
   const seen = new WeakMap();   /* ما أنتجته الترجمة: لا تُعاد ترجمته (مهم للأردو والفارسية بحرف عربي) */
   const ATTRS = ['placeholder', 'title', 'aria-label', 'alt', 'data-label', 'data-stop'];
   const skipEl = (el) => !el || (el.closest && el.closest('script,style,textarea,.lang-pick,[translate="no"]'));

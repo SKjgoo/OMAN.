@@ -104,9 +104,9 @@ if (onProxy()) {
     a.href = u.href;
   }, true);
 }
-(function(){var s=document.createElement('script');s.src='js/emergency.js?v=40';s.defer=true;document.head.appendChild(s);})();
+(function(){var s=document.createElement('script');s.src='js/emergency.js?v=41';s.defer=true;document.head.appendChild(s);})();
 if (isPack(getLang()) && !onProxy()) {
-  document.write('<script src="js/i18n-' + getLang() + '.js?v=40"><\/script><script src="js/i18n.js?v=40"><\/script>');
+  document.write('<script src="js/i18n-' + getLang() + '.js?v=41"><\/script><script src="js/i18n.js?v=41"><\/script>');
 }
 if (getLang() !== 'ar') {
   document.documentElement.lang = getLang();
