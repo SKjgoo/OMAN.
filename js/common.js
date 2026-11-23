@@ -15,7 +15,7 @@ const NAV = [
   { href: 'safety.html',       label: 'الأمان والطقس',   key: 'safety',  icon: '' },
   { href: 'vr.html',           label: 'جولات VR 360°',   key: 'vr',      icon: '' },
   { href: 'plan.html',         label: 'خطّط رحلتك',      key: 'plan',    icon: '' },
-  { href: 'chat.html',         label: 'اسأل المساعد',    key: 'chat',    icon: '' },
+  { href: 'https://skjgoo.github.io/-/', label: 'خدمة العملاء', key: 'support', icon: '', ext: true },
   { href: 'sos.html',          label: 'موقعي والطوارئ',  key: 'sos',     icon: '' }
 ];
 
@@ -104,9 +104,9 @@ if (onProxy()) {
     a.href = u.href;
   }, true);
 }
-(function(){var s=document.createElement('script');s.src='js/emergency.js?v=50';s.defer=true;document.head.appendChild(s);})();
+(function(){var s=document.createElement('script');s.src='js/emergency.js?v=51';s.defer=true;document.head.appendChild(s);})();
 if (isPack(getLang()) && !onProxy()) {
-  document.write('<script src="js/i18n-' + getLang() + '.js?v=50"><\/script><script src="js/i18n.js?v=50"><\/script>');
+  document.write('<script src="js/i18n-' + getLang() + '.js?v=51"><\/script><script src="js/i18n.js?v=51"><\/script>');
 }
 if (getLang() !== 'ar') {
   document.documentElement.lang = getLang();
@@ -241,7 +241,7 @@ function buildChrome() {
     <aside class="rail" id="rail" aria-label="القائمة الرئيسية">
       ${brand}
       <nav class="rail-nav">
-        ${NAV.map(n => `<a href="${n.href}" class="rail-link ${n.key === page ? 'active' : ''}" ${n.key === page ? 'aria-current="page"' : ''}><span class="ri">${n.icon}</span><span>${n.label}</span></a>`).join('')}
+        ${NAV.map(n => `<a href="${n.href}"${n.ext ? ' target="_blank" rel="noopener"' : ''} class="rail-link ${n.key === page ? 'active' : ''}" ${n.key === page ? 'aria-current="page"' : ''}><span class="ri">${n.icon}</span><span>${n.label}</span></a>`).join('')}
       </nav>
       <div class="rail-spacer"></div>
       <div class="rail-sep"></div>
@@ -283,7 +283,7 @@ function buildChrome() {
           </div>
           <div>
             <h4>روابط سريعة</h4>
-            <ul>${NAV.map(n => `<li><a href="${n.href}">${n.label}</a></li>`).join('')}</ul>
+            <ul>${NAV.map(n => `<li><a href="${n.href}"${n.ext ? ' target="_blank" rel="noopener"' : ''}>${n.label}</a></li>`).join('')}</ul>
           </div>
           <div>
             <h4>للطوارئ</h4>
@@ -409,12 +409,14 @@ function buildUploader(esc) {
 /* زر خدمة العملاء العائم: يفتح الرابط في تبويب جديد */
 const SUPPORT_URL = 'https://skjgoo.github.io/-/';
 function buildSupport() {
+  /* الزر العائم صار «اسأل المساعد»، وخدمة العملاء انتقلت للقائمة */
   if (document.querySelector('.support-fab')) return;
+  if (document.body && document.body.dataset.page === 'chat') return;
   const a = document.createElement('a');
-  a.className = 'support-fab';
-  a.href = SUPPORT_URL; a.target = '_blank'; a.rel = 'noopener';
-  a.setAttribute('aria-label', 'خدمة العملاء');
-  a.innerHTML = '<img src="images/customer-service.png" alt="خدمة العملاء" width="512" height="512" loading="lazy">';
+  a.className = 'support-fab ask-fab';
+  a.href = 'chat.html';
+  a.setAttribute('aria-label', 'اسأل المساعد'); a.title = 'اسأل المساعد';
+  a.innerHTML = '<svg viewBox="0 0 48 48" width="38" height="38" aria-hidden="true"><path d="M8 10h32a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H20l-9 7v-7H8a4 4 0 0 1-4-4V14a4 4 0 0 1 4-4z" fill="#fff"/><circle cx="16" cy="23" r="2.6" fill="#0f6a41"/><circle cx="24" cy="23" r="2.6" fill="#0f6a41"/><circle cx="32" cy="23" r="2.6" fill="#0f6a41"/></svg>';
   document.body.appendChild(a);
 }
 
