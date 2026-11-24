@@ -250,7 +250,7 @@ code{background:var(--surface-2);padding:.05em .4em;border-radius:6px;font-size:
 .empty{padding:50px 20px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius)}
 
 /* ---------- صفحة الوجهة ---------- */
-.dest-hero{position:relative;color:#fff;padding:clamp(60px,9vw,120px) 0 clamp(40px,5vw,70px);overflow:hidden}
+.dest-hero{position:relative;isolation:isolate;background:#16363f;color:#fff;padding:clamp(60px,9vw,120px) 0 clamp(40px,5vw,70px);overflow:hidden}
 .dest-hero::before{content:"";position:absolute;inset:0;background:var(--img) center/cover no-repeat;opacity:0;transition:opacity .6s}
 .dest-hero.has-img::before{opacity:1}
 .dest-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,23,34,.35),rgba(10,23,34,.88))}
@@ -690,7 +690,7 @@ html[data-theme="dark"]{
 
 /* زر خدمة العملاء العائم (يسار الصفحة، الشريط الجانبي على اليمين) */
 .support-fab{position:fixed;left:18px;bottom:18px;width:84px;height:84px;z-index:60;border-radius:50%;display:block;
-  filter:drop-shadow(0 6px 14px rgba(0,0,0,.28));transition:transform .2s ease}
+  box-shadow:0 6px 16px rgba(0,0,0,.28);transition:transform .2s ease}
 .support-fab img{width:100%;height:100%;display:block}
 .support-fab:hover,.support-fab:focus-visible{transform:scale(1.08)}
 .support-fab:focus-visible{outline:3px solid #e3b95a;outline-offset:3px}
@@ -730,6 +730,7 @@ html.is-en :is(p,h1,h2,h3,h4,li,td,th,small,summary,label,figcaption,.lead,.kick
 
 /* حماية من اتساع الصفحة على الجوال */
 html{overflow-x:hidden;max-width:100%}
+@supports (overflow:clip){html{overflow-x:clip}}
 body{max-width:100vw}
 img,svg,video,iframe{max-width:100%}
 h1,h2,h3,p,li,a{overflow-wrap:anywhere}
@@ -853,3 +854,5 @@ body[data-page="chat"] .sos-fab{bottom:96px}
 
 .ask-fab{display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#0f6a41,#1f8a57);border:3px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.35);text-decoration:none}
 @media (max-width:760px){.ask-fab svg{width:30px;height:30px}}
+
+.ask-fab{filter:none}
