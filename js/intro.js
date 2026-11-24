@@ -19,6 +19,7 @@
     setTimeout(close, 3400);
   };
   img.onerror = function () { /* بدون مقدمة */ };
-  img.src = 'images/intro.gif?v=3';
+  var portrait = window.innerHeight > window.innerWidth;
+  img.src = portrait ? 'images/intro.gif?v=3' : 'images/intro-wide.gif?v=1';
   box.addEventListener('click', close);
 })();
