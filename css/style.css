@@ -902,3 +902,9 @@ body[data-page="crafts"] .hero h1,body[data-page="crafts"] .hero p{text-shadow:0
 /* خريطة المحافظات */
 .gov-map{display:block;margin:0 0 22px;border-radius:18px;overflow:hidden;border:1px solid var(--line,#e3d9c3);box-shadow:0 10px 30px rgba(0,0,0,.15)}
 .gov-map img{display:block;width:100%;height:auto}
+
+/* واجهة الوجهات */
+body[data-page="dest"] .hero{background:linear-gradient(180deg,rgba(6,20,24,.7) 0%,rgba(6,20,24,.5) 50%,rgba(6,20,24,.78) 100%),url("../images/destinations-bg.jpg") 50% 100%/auto 190% no-repeat,#0f3b44}
+body[data-page="dest"] .hero::before{opacity:.04}
+body[data-page="dest"] .hero h1,body[data-page="dest"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.85)}
+@media(min-width:700px){body[data-page="dest"] .hero{background-size:cover,cover;background-position:center,center 100%}}
