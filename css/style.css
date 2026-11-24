@@ -919,3 +919,8 @@ body[data-page="trip"] .hero h1,body[data-page="trip"] .hero p{text-shadow:0 2px
 body[data-page="adv"] .hero{background:linear-gradient(180deg,rgba(10,16,12,.68) 0%,rgba(10,16,12,.45) 50%,rgba(10,16,12,.78) 100%),url("../images/adventure-bg.jpg") 40% 55%/cover no-repeat,#3b2a18}
 body[data-page="adv"] .hero::before{opacity:.04}
 body[data-page="adv"] .hero h1,body[data-page="adv"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.85)}
+
+/* واجهة البيئة والتخييم */
+body[data-page="eco"] .hero{background:linear-gradient(180deg,rgba(8,18,10,.66) 0%,rgba(8,18,10,.42) 50%,rgba(8,18,10,.78) 100%),url("../images/eco-bg.jpg") 45% 58%/cover no-repeat,#1f3a1c}
+body[data-page="eco"] .hero::before{opacity:.04}
+body[data-page="eco"] .hero h1,body[data-page="eco"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.85)}
