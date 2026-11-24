@@ -914,3 +914,8 @@ body[data-page="trip"] .hero{background:linear-gradient(180deg,rgba(14,18,16,.68
 body[data-page="trip"] .hero::before{opacity:.04}
 body[data-page="trip"] .hero h1,body[data-page="trip"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.85)}
 @media(min-width:700px){body[data-page="trip"] .hero{background-size:cover,cover;background-position:center,center 100%}}
+
+/* واجهة المغامرة */
+body[data-page="adv"] .hero{background:linear-gradient(180deg,rgba(10,16,12,.68) 0%,rgba(10,16,12,.45) 50%,rgba(10,16,12,.78) 100%),url("../images/adventure-bg.jpg") 40% 55%/cover no-repeat,#3b2a18}
+body[data-page="adv"] .hero::before{opacity:.04}
+body[data-page="adv"] .hero h1,body[data-page="adv"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.85)}
