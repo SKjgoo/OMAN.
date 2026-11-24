@@ -888,8 +888,8 @@ body[data-page="history"] .hero h1,body[data-page="history"] .hero p{text-shadow
 .gov-map{display:block;margin:0 0 22px;border-radius:18px;overflow:hidden;border:1px solid var(--line,#e3d9c3);box-shadow:0 10px 30px rgba(0,0,0,.15)}
 .gov-map img{display:block;width:100%;height:auto}
 
-/* واجهة المحافظات: الخريطة كخلفية */
-body[data-page="gov"] .hero{background:linear-gradient(180deg,rgba(8,20,16,.86) 0%,rgba(8,20,16,.74) 50%,rgba(8,20,16,.9) 100%),url("../images/governorates-map.jpg") center center/cover no-repeat,#123a2b}
+/* واجهة المحافظات: مضيق مسندم */
+body[data-page="gov"] .hero{background:linear-gradient(180deg,rgba(6,22,26,.55) 0%,rgba(6,22,26,.35) 50%,rgba(6,22,26,.75) 100%),url("../images/musandam-fjords.jpg") center 62%/cover no-repeat,#0f3b44}
 body[data-page="gov"] .hero::before{opacity:.04}
 body[data-page="gov"] .hero h1,body[data-page="gov"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.85)}
 
@@ -898,3 +898,7 @@ body[data-page="crafts"] .hero{background:linear-gradient(180deg,rgba(20,12,6,.7
 body[data-page="crafts"] .hero::before{opacity:.04}
 body[data-page="crafts"] .hero h1,body[data-page="crafts"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.85)}
 @media(min-width:700px){body[data-page="crafts"] .hero{background-size:cover;background-position:center 100%}}
+
+/* خريطة المحافظات */
+.gov-map{display:block;margin:0 0 22px;border-radius:18px;overflow:hidden;border:1px solid var(--line,#e3d9c3);box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.gov-map img{display:block;width:100%;height:auto}
