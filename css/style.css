@@ -908,3 +908,9 @@ body[data-page="dest"] .hero{background:linear-gradient(180deg,rgba(6,20,24,.7) 
 body[data-page="dest"] .hero::before{opacity:.04}
 body[data-page="dest"] .hero h1,body[data-page="dest"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.85)}
 @media(min-width:700px){body[data-page="dest"] .hero{background-size:cover,cover;background-position:center,center 100%}}
+
+/* واجهة الرحلة */
+body[data-page="trip"] .hero{background:linear-gradient(180deg,rgba(14,18,16,.68) 0%,rgba(14,18,16,.45) 50%,rgba(14,18,16,.78) 100%),url("../images/trip-bg.jpg") 70% 85%/auto 190% no-repeat,#3b2a18}
+body[data-page="trip"] .hero::before{opacity:.04}
+body[data-page="trip"] .hero h1,body[data-page="trip"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.85)}
+@media(min-width:700px){body[data-page="trip"] .hero{background-size:cover,cover;background-position:center,center 100%}}
