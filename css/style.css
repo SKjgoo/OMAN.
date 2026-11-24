@@ -878,3 +878,9 @@ body[data-page="home"] .hero h1,body[data-page="home"] .hero p.lead{text-shadow:
 
 /* خط موحّد لكل عناصر الموقع */
 button,input,select,textarea,.leaflet-container{font-family:'IBM Plex Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif}
+
+/* واجهة صفحة عُمان عبر الزمان: شعار السلطنة على خلفية سوداء */
+body[data-page="history"] .hero{background:linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.5)),url("../images/hero-emblem.jpg") center 55%/cover no-repeat,#000}
+body[data-page="history"] .hero::before{opacity:.04}
+body[data-page="history"] .hero h1,body[data-page="history"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.8)}
+@media(min-width:900px){body[data-page="history"] .hero{background:linear-gradient(90deg,rgba(0,0,0,0),rgba(0,0,0,.45)),url("../images/hero-emblem.jpg") 10% center/auto 170% no-repeat,#000}}
