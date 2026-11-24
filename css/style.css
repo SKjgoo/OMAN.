@@ -870,3 +870,8 @@ body[data-page="chat"] .sos-fab{bottom:96px}
 .fxres small{opacity:.85}#fx-out{font-size:1.7rem;font-weight:800;margin-top:4px;word-break:break-all}
 .fxinfo{font-size:.78rem;opacity:.7;margin:10px 0 0}
 .fx-link{display:flex;align-items:center;gap:8px;width:100%;background:transparent;border:0;cursor:pointer;font:inherit;text-align:start;color:inherit}
+
+/* خلفية الرئيسية: لوحة اليوم الوطني */
+body[data-page="home"] .hero{background:linear-gradient(180deg,rgba(10,18,20,.35) 0%,rgba(10,18,20,.62) 55%,rgba(10,18,20,.82) 100%),url("../images/home-bg.jpg") center 8%/cover no-repeat,#5a1117}
+body[data-page="home"] .hero::before{opacity:.05}
+body[data-page="home"] .hero h1,body[data-page="home"] .hero p.lead{text-shadow:0 2px 12px rgba(0,0,0,.55)}
