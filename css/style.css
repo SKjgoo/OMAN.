@@ -883,3 +883,7 @@ button,input,select,textarea,.leaflet-container{font-family:'IBM Plex Sans Arabi
 body[data-page="history"] .hero{background:linear-gradient(180deg,rgba(10,16,14,.72) 0%,rgba(10,16,14,.55) 45%,rgba(10,16,14,.8) 100%),url("../images/sultanate.jpg") center 72%/cover no-repeat,#222}
 body[data-page="history"] .hero::before{opacity:.04}
 body[data-page="history"] .hero h1,body[data-page="history"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.85)}
+
+/* خريطة المحافظات */
+.gov-map{display:block;margin:0 0 22px;border-radius:18px;overflow:hidden;border:1px solid var(--line,#e3d9c3);box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.gov-map img{display:block;width:100%;height:auto}
