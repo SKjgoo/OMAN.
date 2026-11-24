@@ -20,6 +20,7 @@
   };
   img.onerror = function () { /* بدون مقدمة */ };
   var portrait = window.innerHeight > window.innerWidth;
+  if (!portrait) img.style.objectFit = 'contain';
   img.src = portrait ? 'images/intro.gif?v=3' : 'images/intro-wide.gif?v=1';
   box.addEventListener('click', close);
 })();
