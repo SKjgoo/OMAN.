@@ -20,7 +20,7 @@
   };
   img.onerror = function () { /* بدون مقدمة */ };
   var portrait = window.innerHeight > window.innerWidth;
-  if (!portrait) img.style.objectFit = 'contain';
+  if (!portrait) img.style.objectFit = (window.innerHeight <= 520) ? 'cover' : 'contain'; /* جوال مقلوب: يملأ الشاشة */
   img.src = portrait ? 'images/intro.gif?v=3' : 'images/intro-wide.gif?v=1';
   box.addEventListener('click', close);
 })();
