@@ -924,3 +924,8 @@ body[data-page="adv"] .hero h1,body[data-page="adv"] .hero p{text-shadow:0 2px 1
 body[data-page="eco"] .hero{background:linear-gradient(180deg,rgba(8,18,10,.66) 0%,rgba(8,18,10,.42) 50%,rgba(8,18,10,.78) 100%),url("../images/eco-bg.jpg") 45% 58%/cover no-repeat,#1f3a1c}
 body[data-page="eco"] .hero::before{opacity:.04}
 body[data-page="eco"] .hero h1,body[data-page="eco"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.85)}
+
+/* واجهة الأمان والطقس */
+body[data-page="safety"] .hero{background:linear-gradient(180deg,rgba(8,14,20,.66) 0%,rgba(8,14,20,.4) 50%,rgba(8,14,20,.78) 100%),url("../images/safety-bg.jpg") 60% 45%/cover no-repeat,#1c2f44}
+body[data-page="safety"] .hero::before{opacity:.04}
+body[data-page="safety"] .hero h1,body[data-page="safety"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.85)}
