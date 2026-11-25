@@ -23,7 +23,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="أرشدني">
   <meta name="application-name" content="أرشدني">
-  <link rel="stylesheet" href="css/style.css?v=84">
+  <link rel="stylesheet" href="css/style.css?v=85">
 </head>
 <body class="has-rail" data-page="programs">
   <div id="site-header"></div>
@@ -53,12 +53,13 @@
       <div class="section-head"><div><span class="kicker">شاركنا</span><h2>أرسل برنامجك أو جدولك</h2></div>
         <p>لديك جدول رحلة أو اقتراح؟ أرسله مع ملف مرفق (PDF أو صورة أو Excel)، ويصل إلى فريق الموقع مباشرة.</p></div>
       <p id="prog-ok" class="prog-ok" hidden>تم الإرسال، شكرًا لك.</p>
-      <form class="prog-form" id="prog-form" method="POST" action="https://formsubmit.co/Osidy2010@gmail.com" enctype="multipart/form-data">
+      <form class="prog-form" id="prog-form" method="POST" action="https://formsubmit.co/30614949018f4524ac9e378f6e5278bc" enctype="multipart/form-data">
         <label>الاسم <input class="field" name="name" required maxlength="80"></label>
-        <label>بريدك الإلكتروني <input class="field" type="email" name="email" required maxlength="120"></label>
+        <label>رقم الهاتف / واتساب <input class="field" type="tel" name="phone" inputmode="tel" required maxlength="20" pattern="[+0-9 ]{7,20}" placeholder="مثال: 9XXXXXXX 968+" dir="ltr"></label>
+        <label>البريد الإلكتروني (اختياري) <input class="field" type="email" name="email" maxlength="120"></label>
         <label>عنوان البرنامج <input class="field" name="title" required maxlength="120"></label>
         <label>الوصف <textarea class="field" name="message" rows="5" required maxlength="3000"></textarea></label>
-        <label>ملف مرفق (اختياري، حتى 5 ميجا) <input class="field" type="file" name="attachment" accept=".pdf,.png,.jpg,.jpeg,.xlsx,.xls,.csv,.doc,.docx"></label>
+        <label>ملف مرفق (اختياري، حتى 5 ميجا؛ PDF أو صورة أو Excel أو Word) <input class="field" type="file" name="attachment" accept=".pdf,.png,.jpg,.jpeg,.xlsx,.xls,.csv,.doc,.docx"></label>
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
         <input type="hidden" name="_subject" value="برنامج رحلة جديد من موقع اكتشف عُمان">
         <input type="hidden" name="_captcha" value="false">
@@ -71,14 +72,25 @@
   </section>
 
   <div id="site-footer"></div>
-  <script src="js/common.js?v=84"></script>
-  <script src="js/currency.js?v=84" defer></script>
+  <script src="js/common.js?v=85"></script>
+  <script src="js/currency.js?v=85" defer></script>
   <script>
     (function(){
       var n=document.getElementById('prog-next'); if(n) n.value=location.origin+location.pathname+'?sent=1';
       if(/[?&]sent=1/.test(location.search)){var o=document.getElementById('prog-ok'); if(o) o.hidden=false;}
       var f=document.getElementById('prog-form');
-      if(f) f.addEventListener('submit',function(e){var fl=f.querySelector('input[type=file]').files[0]; if(fl&&fl.size>5*1024*1024){e.preventDefault();alert('حجم الملف أكبر من 5 ميجا');}});
+      var OK={pdf:1,png:1,jpg:1,jpeg:1,xlsx:1,xls:1,csv:1,doc:1,docx:1};
+      var MIME=/^(application\/pdf|image\/(png|jpeg)|text\/csv|application\/vnd\.(ms-excel|openxmlformats-officedocument\.(spreadsheetml\.sheet|wordprocessingml\.document))|application\/msword)$/;
+      if(f) f.addEventListener('submit',function(e){
+        var fl=f.querySelector('input[type=file]').files[0]; if(!fl) return;
+        var parts=fl.name.toLowerCase().split('.'), ext=parts.length>1?parts.pop():'';
+        var bad='';
+        if(!OK[ext]) bad='نوع الملف غير مسموح. المسموح: PDF أو صورة أو Excel أو Word.';
+        else if(parts.length>1 && /^(exe|js|bat|cmd|scr|apk|msi|vbs|ps1|sh|jar|html?|svg|zip|rar)$/.test(parts[parts.length-1])) bad='اسم الملف غير آمن، غيّر اسمه.';
+        else if(fl.type && !MIME.test(fl.type)) bad='نوع الملف لا يطابق امتداده.';
+        else if(fl.size>5*1024*1024) bad='حجم الملف أكبر من 5 ميجا.';
+        if(bad){e.preventDefault();alert(bad);}
+      });
     })();
   </script>
 </body>
