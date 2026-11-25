@@ -15,6 +15,7 @@ const NAV = [
   { href: 'safety.html',       label: 'الأمان والطقس',   key: 'safety',  icon: '' },
   { href: 'vr.html',           label: 'جولات VR 360°',   key: 'vr',      icon: '' },
   { href: 'plan.html',         label: 'خطّط رحلتك',      key: 'plan',    icon: '' },
+  { href: 'programs.html',     label: 'برامج الرحلات',   key: 'programs', icon: '' },
   { href: 'https://skjgoo.github.io/-/', label: 'خدمة العملاء', key: 'support', icon: '', ext: true },
   { href: 'sos.html',          label: 'موقعي والطوارئ',  key: 'sos',     icon: '' }
 ];
@@ -104,9 +105,9 @@ if (onProxy()) {
     a.href = u.href;
   }, true);
 }
-(function(){var s=document.createElement('script');s.src='js/emergency.js?v=83';s.defer=true;document.head.appendChild(s);})();
+(function(){var s=document.createElement('script');s.src='js/emergency.js?v=84';s.defer=true;document.head.appendChild(s);})();
 if (isPack(getLang()) && !onProxy()) {
-  document.write('<script src="js/i18n-' + getLang() + '.js?v=83"><\/script><script src="js/i18n.js?v=83"><\/script>');
+  document.write('<script src="js/i18n-' + getLang() + '.js?v=84"><\/script><script src="js/i18n.js?v=84"><\/script>');
 }
 if (getLang() !== 'ar') {
   document.documentElement.lang = getLang();
