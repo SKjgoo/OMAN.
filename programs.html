@@ -23,7 +23,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="أرشدني">
   <meta name="application-name" content="أرشدني">
-  <link rel="stylesheet" href="css/style.css?v=85">
+  <link rel="stylesheet" href="css/style.css?v=86">
 </head>
 <body class="has-rail" data-page="programs">
   <div id="site-header"></div>
@@ -59,6 +59,7 @@
         <label>البريد الإلكتروني (اختياري) <input class="field" type="email" name="email" maxlength="120"></label>
         <label>عنوان البرنامج <input class="field" name="title" required maxlength="120"></label>
         <label>الوصف <textarea class="field" name="message" rows="5" required maxlength="3000"></textarea></label>
+        <label class="prog-check"><input type="checkbox" name="women_section" value="نعم"> <span>القسم النسائي: أرغب أن ترد عليّ سيدة من الفريق، أو أن يكون البرنامج للنساء والعائلات</span></label>
         <label>ملف مرفق (اختياري، حتى 5 ميجا؛ PDF أو صورة أو Excel أو Word) <input class="field" type="file" name="attachment" accept=".pdf,.png,.jpg,.jpeg,.xlsx,.xls,.csv,.doc,.docx"></label>
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
         <input type="hidden" name="_subject" value="برنامج رحلة جديد من موقع اكتشف عُمان">
@@ -72,8 +73,8 @@
   </section>
 
   <div id="site-footer"></div>
-  <script src="js/common.js?v=85"></script>
-  <script src="js/currency.js?v=85" defer></script>
+  <script src="js/common.js?v=86"></script>
+  <script src="js/currency.js?v=86" defer></script>
   <script>
     (function(){
       var n=document.getElementById('prog-next'); if(n) n.value=location.origin+location.pathname+'?sent=1';
@@ -82,6 +83,8 @@
       var OK={pdf:1,png:1,jpg:1,jpeg:1,xlsx:1,xls:1,csv:1,doc:1,docx:1};
       var MIME=/^(application\/pdf|image\/(png|jpeg)|text\/csv|application\/vnd\.(ms-excel|openxmlformats-officedocument\.(spreadsheetml\.sheet|wordprocessingml\.document))|application\/msword)$/;
       if(f) f.addEventListener('submit',function(e){
+        var w=f.querySelector('[name=women_section]'),sb=f.querySelector('[name=_subject]');
+        if(sb) sb.value=(w&&w.checked?'[قسم نسائي] ':'')+'برنامج رحلة جديد من موقع اكتشف عُمان';
         var fl=f.querySelector('input[type=file]').files[0]; if(!fl) return;
         var parts=fl.name.toLowerCase().split('.'), ext=parts.length>1?parts.pop():'';
         var bad='';
