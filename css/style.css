@@ -929,3 +929,9 @@ body[data-page="eco"] .hero h1,body[data-page="eco"] .hero p{text-shadow:0 2px 1
 body[data-page="safety"] .hero{background:linear-gradient(180deg,rgba(8,14,20,.66) 0%,rgba(8,14,20,.4) 50%,rgba(8,14,20,.78) 100%),url("../images/safety-bg.jpg") 60% 45%/cover no-repeat,#1c2f44}
 body[data-page="safety"] .hero::before{opacity:.04}
 body[data-page="safety"] .hero h1,body[data-page="safety"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.85)}
+
+/* واجهة جولات 360 */
+body[data-page="vr"] .hero{background:linear-gradient(180deg,rgba(6,14,24,.7) 0%,rgba(6,14,24,.45) 50%,rgba(6,14,24,.8) 100%),url("../images/vr-bg.jpg") 45% 100%/auto 200% no-repeat,#15304a}
+body[data-page="vr"] .hero::before{opacity:.04}
+body[data-page="vr"] .hero h1,body[data-page="vr"] .hero p{text-shadow:0 2px 12px rgba(0,0,0,.85)}
+@media(min-width:700px){body[data-page="vr"] .hero{background-size:cover,cover;background-position:center,center 100%}}
