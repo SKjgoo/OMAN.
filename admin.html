@@ -4,7 +4,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>لوحة التحكم | اكتشف عُمان</title>
-<link rel="stylesheet" href="css/style.css?v=87">
+<link rel="stylesheet" href="css/style.css?v=88">
 <style>
 body{padding:16px;max-width:760px;margin:0 auto}h1{font-size:1.4rem}.box{background:var(--card,#fff);border:1px solid var(--line,#d9cfb8);border-radius:14px;padding:14px;margin:14px 0}
 label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;width:100%;margin-top:4px;padding:10px;font:inherit;border:1px solid var(--line,#d9cfb8);border-radius:10px;background:#fff;color:#1c2b2f}
@@ -15,7 +15,7 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
 </style>
 </head>
 <body class="admin">
-<h1>لوحة التحكم: برامج الرحلات</h1>
+<h1>لوحة التحكم</h1>
 <div id="msg"></div>
 
 <div class="box" id="setup">
@@ -26,6 +26,8 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
   <div class="row"><button class="btn2" id="save-tok" type="button">حفظ وتحميل البرامج</button><button class="btn2 red" id="out" type="button">تسجيل خروج</button></div>
 </div>
 
+<div class="row" id="tabs" hidden><button class="btn2" type="button" data-tab="prog" style="font-weight:700">برامج الرحلات</button><button class="btn2" type="button" data-tab="dest">الوجهات</button></div>
+<div id="tab-prog">
 <div class="box" id="list-box" hidden><b>البرامج المنشورة</b><div id="list"></div></div>
 
 <form class="box" id="form" hidden>
@@ -39,7 +41,130 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
   <div class="row" style="margin-top:14px"><button class="btn" type="submit" id="pub">نشر</button><button class="btn2" type="button" id="reset">برنامج جديد</button></div>
   <p class="muted" style="font-size:.85rem">بعد النشر يظهر في الموقع خلال دقيقة تقريباً.</p>
 </form>
+</div>
 
+<div id="tab-dest" hidden>
+<div class="box"><b>الوجهات</b>
+  <input id="d-q" placeholder="ابحث عن وجهة..." style="margin:8px 0">
+  <div id="d-list" style="max-height:340px;overflow:auto"></div>
+  <p class="muted" style="font-size:.85rem" id="d-count"></p></div>
+<form class="box" id="d-form">
+  <b id="d-title">وجهة جديدة</b>
+  <label>المعرّف (حروف لاتينية صغيرة وأرقام وشرطة، مثل wadi-example)<input id="d-id" dir="ltr" required pattern="[a-z0-9\-]{2,40}" placeholder="wadi-example"></label>
+  <label>الاسم <input id="d-name" required maxlength="80"></label>
+  <div class="row"><label>المحافظة <select id="d-gov" style="display:block;width:100%;margin-top:4px;padding:10px;font:inherit;border-radius:10px"></select></label>
+  <label>النوع <select id="d-cat" style="display:block;width:100%;margin-top:4px;padding:10px;font:inherit;border-radius:10px"></select></label></div>
+  <div class="row"><label>خط العرض (Lat) <input id="d-lat" dir="ltr" required inputmode="decimal" placeholder="23.5859"></label>
+  <label>خط الطول (Lng) <input id="d-lng" dir="ltr" required inputmode="decimal" placeholder="58.3830"></label></div>
+  <label>ملخص قصير (جملة وحدة) <input id="d-sum" required maxlength="220"></label>
+  <label>الوصف (كل فقرة في سطر، اترك سطر فاضي بين الفقرات) <textarea id="d-desc" rows="6" required></textarea></label>
+  <label>أبرز ما فيها (كل نقطة في سطر) <textarea id="d-hl" rows="4"></textarea></label>
+  <label>نصائح (كل نصيحة في سطر) <textarea id="d-tips" rows="3"></textarea></label>
+  <div class="row"><label>أفضل وقت <input id="d-best" maxlength="100"></label><label>مدة الزيارة <input id="d-dur" maxlength="60"></label></div>
+  <label>صورة الغلاف (اختيارية، تُصغَّر تلقائياً) <input id="d-img" type="file" accept="image/jpeg,image/png,image/webp"></label>
+  <div class="row" style="margin-top:14px"><button class="btn" type="submit" id="d-pub">نشر</button><button class="btn2" type="button" id="d-reset">وجهة جديدة</button></div>
+  <p class="muted" style="font-size:.85rem">بعد النشر تظهر في الموقع خلال دقيقة تقريباً. الوجهات الجديدة تظهر بالعربي فقط في اللغات الأخرى.</p>
+</form>
+<script>
+(function(){
+  var PATH='data/dest-extra.js', IMG='images/', X={add:[],edit:{},hide:[]}, xsha='', editing=null;
+  var $=function(i){return document.getElementById(i)};
+  var A=function(){return window.ADM};
+  var clean=function(s){return String(s||'').replace(/[<>]/g,'').trim()};
+  var lines=function(s){return s.split('\n').map(clean).filter(Boolean)};
+  var paras=function(s){return s.split(/\n\s*\n/).map(function(p){return clean(p.replace(/\n/g,' '))}).filter(Boolean)};
+  function url(p){return A().api+'/repos/'+A().repo()+'/contents/'+p}
+  function loadX(){
+    return fetch(url(PATH)+'?t='+Date.now(),{headers:A().hdr(),cache:'no-store'}).then(function(r){
+      if(r.status===404){X={add:[],edit:{},hide:[]};xsha='';return}
+      if(!r.ok) throw new Error('تعذّر تحميل الوجهات ('+r.status+')');
+      return r.json().then(function(j){xsha=j.sha;var t=A().b64d(j.content);var m=t.match(/window\.DEST_EXTRA\s*=\s*([\s\S]*?);?\s*$/);X=m?JSON.parse(m[1]):{add:[],edit:{},hide:[]};X.add=X.add||[];X.edit=X.edit||{};X.hide=X.hide||[]});
+    });
+  }
+  function commitX(msg){
+    var body={message:msg,content:A().b64e('window.DEST_EXTRA='+JSON.stringify(X,null,1)+';\n'),branch:'main'}; if(xsha) body.sha=xsha;
+    return fetch(url(PATH),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},A().hdr()),body:JSON.stringify(body)}).then(function(r){
+      if(r.status===409||r.status===422) throw new Error('تعارض: حدّث الصفحة وأعد المحاولة.');
+      if(!r.ok) throw new Error('فشل النشر ('+r.status+')');
+      return r.json().then(function(j){xsha=j.content.sha});
+    });
+  }
+  function all(){
+    var base=DESTINATIONS.map(function(d){var o=Object.assign({},d,X.edit[d.id]||{});o._base=true;o._hidden=X.hide.indexOf(d.id)>-1;return o});
+    var add=X.add.map(function(d){var o=Object.assign({},d);o._added=true;return o});
+    return base.concat(add);
+  }
+  function draw(){
+    var q=$('d-q').value.trim(), box=$('d-list');box.textContent='';
+    var items=all().filter(function(d){return !q||(d.name+' '+d.id).indexOf(q)>-1});
+    items.forEach(function(d){
+      var row=document.createElement('div');row.className='item';
+      var s=document.createElement('span');s.textContent=d.name+(d._hidden?' (مخفية)':'')+(d._added?' (جديدة)':'');row.appendChild(s);
+      var w=document.createElement('span');
+      function btn(t,f,red){var b=document.createElement('button');b.type='button';b.className='btn2'+(red?' red':'');b.textContent=t;b.style.marginInlineStart='4px';b.onclick=f;w.appendChild(b)}
+      if(d._hidden) btn('استعادة',function(){restore(d.id)});
+      else{btn('تعديل',function(){fill(d)});btn('حذف',function(){remove(d)},true)}
+      row.appendChild(w);box.appendChild(row);
+    });
+    $('d-count').textContent='العدد: '+items.length;
+  }
+  function save(msg,after){A().say('جاري النشر...');return commitX(msg).then(function(){A().say('تم. يظهر بالموقع خلال دقيقة.');draw();if(after)after()}).catch(function(e){A().say(e.message,true);return loadX().then(draw)})}
+  function remove(d){
+    if(!confirm('حذف «'+d.name+'» من الموقع؟'))return;
+    if(d._added){X.add=X.add.filter(function(x){return x.id!==d.id})}else{if(X.hide.indexOf(d.id)<0)X.hide.push(d.id)}
+    save('حذف وجهة '+d.id);
+  }
+  function restore(id){X.hide=X.hide.filter(function(x){return x!==id});save('استعادة وجهة '+id)}
+  function fill(d){
+    editing=d;$('d-title').textContent='تعديل: '+d.name;
+    $('d-id').value=d.id;$('d-id').readOnly=true;$('d-name').value=d.name||'';$('d-gov').value=d.gov;$('d-cat').value=d.cat;
+    $('d-lat').value=d.lat;$('d-lng').value=d.lng;$('d-sum').value=d.summary||'';
+    $('d-desc').value=(d.desc||[]).join('\n\n');$('d-hl').value=(d.highlights||[]).join('\n');$('d-tips').value=(d.tips||[]).join('\n');
+    $('d-best').value=d.bestTime||'';$('d-dur').value=d.duration||'';$('d-img').value='';
+    $('d-form').scrollIntoView({behavior:'smooth'});
+  }
+  function reset(){editing=null;$('d-title').textContent='وجهة جديدة';$('d-form').reset();$('d-id').readOnly=false;$('d-gov').selectedIndex=0;$('d-cat').selectedIndex=0}
+  function resize(file){
+    return new Promise(function(ok,no){
+      var im=new Image(),u=URL.createObjectURL(file);
+      im.onload=function(){var m=1600,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(function(b){if(!b)return no(new Error('تعذّر معالجة الصورة'));var r=new FileReader();r.onload=function(){ok(String(r.result).split(',')[1])};r.readAsDataURL(b)},'image/jpeg',.82)};
+      im.onerror=function(){no(new Error('الصورة غير صالحة'))};im.src=u;
+    });
+  }
+  function uploadImg(id,file){
+    return resize(file).then(function(b64){
+      var p=IMG+id+'.jpg';
+      return fetch(url(p)+'?t='+Date.now(),{headers:A().hdr(),cache:'no-store'}).then(function(r){return r.ok?r.json().then(function(j){return j.sha}):''}).then(function(sha){
+        var body={message:'صورة وجهة '+id,content:b64,branch:'main'};if(sha)body.sha=sha;
+        return fetch(url(p),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},A().hdr()),body:JSON.stringify(body)}).then(function(r){if(!r.ok)throw new Error('فشل رفع الصورة ('+r.status+')')});
+      });
+    });
+  }
+  $('d-form').onsubmit=function(e){
+    e.preventDefault();
+    var id=$('d-id').value.trim(),lat=parseFloat($('d-lat').value),lng=parseFloat($('d-lng').value);
+    if(!/^[a-z0-9-]{2,40}$/.test(id)){A().say('المعرّف لاتيني صغير فقط',true);return}
+    if(!(lat>=15&&lat<=28&&lng>=50&&lng<=62)){A().say('الإحداثيات خارج نطاق عُمان. تأكد من خط العرض والطول.',true);return}
+    if(!editing&&all().some(function(d){return d.id===id})){A().say('هذا المعرّف مستخدم',true);return}
+    var f={name:clean($('d-name').value),gov:$('d-gov').value,cat:$('d-cat').value,lat:lat,lng:lng,summary:clean($('d-sum').value),desc:paras($('d-desc').value),highlights:lines($('d-hl').value),tips:lines($('d-tips').value),bestTime:clean($('d-best').value),duration:clean($('d-dur').value)};
+    if(!f.desc.length){A().say('اكتب الوصف',true);return}
+    var file=$('d-img').files[0], isEdit=!!editing;
+    if(isEdit){ if(editing._added){X.add=X.add.map(function(x){return x.id===id?Object.assign({id:id,vr:x.vr},f):x})}else{X.edit[id]=f} }
+    else{ X.add.push(Object.assign({id:id},f)) }
+    A().say('جاري النشر...');
+    (file?uploadImg(id,file):Promise.resolve()).then(function(){return commitX((isEdit?'تعديل':'إضافة')+' وجهة '+id)}).then(function(){A().say('تم. تظهر بالموقع خلال دقيقة.');draw();reset()}).catch(function(e){A().say(e.message,true);return loadX().then(draw)});
+  };
+  $('d-reset').onclick=reset;$('d-q').oninput=draw;
+  document.addEventListener('adm-login',function(){
+    $('d-gov').innerHTML=GOVERNORATES.map(function(g){return '<option value="'+g.id+'">'+g.name+'</option>'}).join('');
+    $('d-cat').innerHTML=Object.keys(CATEGORIES).map(function(k){return '<option value="'+k+'">'+CATEGORIES[k].label+'</option>'}).join('');
+    loadX().then(draw).catch(function(e){A().say(e.message,true)});
+  });
+})();
+</script>
+</div>
+
+<script src="js/data.js?v=88"></script>
 <script>
 (function(){
   var API='https://api.github.com', PATH='data/programs.json';
@@ -77,7 +202,7 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
     });
     if(!list.length)box.textContent='لا توجد برامج.';
   }
-  function show(){ $('setup').hidden=!!tok&&false; $('list-box').hidden=false;$('form').hidden=false;drawList();resetForm() }
+  function show(){ $('setup').hidden=!!tok&&false; $('tabs').hidden=false;$('list-box').hidden=false;$('form').hidden=false;drawList();resetForm();document.dispatchEvent(new Event('adm-login')) }
   function dayRow(d,t){
     var r=document.createElement('div');r.className='day';
     var a=document.createElement('input');a.value=d||'';a.placeholder='اليوم 1';a.className='dd';
@@ -96,7 +221,7 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
     say('جاري التحميل...');
     load().then(function(){lsSet('ghTok',tok);lsSet('ghRepo',repo);$('tok').value='';say('تم الدخول');show()}).catch(function(e){say(e.message,true)});
   };
-  $('out').onclick=function(){lsSet('ghTok','');tok='';list=[];$('list-box').hidden=true;$('form').hidden=true;say('تم تسجيل الخروج')};
+  $('out').onclick=function(){lsSet('ghTok','');tok='';list=[];$('tabs').hidden=true;$('list-box').hidden=true;$('form').hidden=true;$('tab-dest').hidden=true;$('tab-prog').hidden=false;say('تم تسجيل الخروج')};
   $('add-day').onclick=function(){dayRow('اليوم '+($('days').children.length+1),'')};
   $('reset').onclick=resetForm;
   $('form').onsubmit=function(e){
@@ -107,6 +232,8 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
     if(editing!=null)list[editing]=p;else list.push(p);
     save(editing!=null?'تعديل برنامج':'إضافة برنامج').then(resetForm);
   };
+  window.ADM={api:API,hdr:hdr,repo:function(){return repo},say:say,b64e:b64e,b64d:b64d};
+  [].forEach.call(document.querySelectorAll('#tabs [data-tab]'),function(b){b.onclick=function(){var t=b.dataset.tab;$('tab-prog').hidden=t!=='prog';$('tab-dest').hidden=t!=='dest';[].forEach.call(document.querySelectorAll('#tabs [data-tab]'),function(x){x.style.fontWeight=x===b?'700':'400'})}});
   tok=lsGet('ghTok');repo=lsGet('ghRepo')||'SKjgoo/OMAN.';$('repo').value=repo;
   if(tok){load().then(show).catch(function(e){say(e.message,true)})}
 })();
