@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>لوحة التحكم | اكتشف عُمان</title>
+<link rel="stylesheet" href="css/style.css?v=87">
+<style>
+body{padding:16px;max-width:760px;margin:0 auto}h1{font-size:1.4rem}.box{background:var(--card,#fff);border:1px solid var(--line,#d9cfb8);border-radius:14px;padding:14px;margin:14px 0}
+label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;width:100%;margin-top:4px;padding:10px;font:inherit;border:1px solid var(--line,#d9cfb8);border-radius:10px;background:#fff;color:#1c2b2f}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}.btn2{border:0;border-radius:10px;padding:10px 14px;font:inherit;cursor:pointer;background:#e8dfc9;color:#1c2b2f}.btn2.red{background:#b3342b;color:#fff}
+.item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line,#e3d9c3)}.item:last-child{border:0}
+#msg{position:sticky;top:8px;padding:10px 14px;border-radius:10px;background:#e3f4e8;color:#14532d;display:none;z-index:5}#msg.err{background:#fde7e5;color:#8a1c14}
+.day{display:grid;grid-template-columns:90px 1fr 40px;gap:6px;align-items:start;margin:6px 0}
+</style>
+</head>
+<body class="admin">
+<h1>لوحة التحكم: برامج الرحلات</h1>
+<div id="msg"></div>
+
+<div class="box" id="setup">
+  <b>الدخول (مرة وحدة على هذا الجهاز)</b>
+  <p class="muted" style="font-size:.85rem">الصق رمز GitHub الخاص بك (Fine-grained token بصلاحية Contents: Read and write على مستودع الموقع فقط). يُحفظ في متصفحك هنا فقط ولا يرسل لأي جهة غير GitHub.</p>
+  <label>الرمز <input id="tok" type="password" autocomplete="off" placeholder="github_pat_..."></label>
+  <label>المستودع <input id="repo" value="SKjgoo/OMAN." dir="ltr"></label>
+  <div class="row"><button class="btn2" id="save-tok" type="button">حفظ وتحميل البرامج</button><button class="btn2 red" id="out" type="button">تسجيل خروج</button></div>
+</div>
+
+<div class="box" id="list-box" hidden><b>البرامج المنشورة</b><div id="list"></div></div>
+
+<form class="box" id="form" hidden>
+  <b id="form-title">برنامج جديد</b>
+  <label>العنوان <input id="f-title" required maxlength="120" placeholder="مثال: ٣ أيام في مسقط"></label>
+  <label>ملاحظة قصيرة <input id="f-note" maxlength="200" placeholder="مناسب لـ... / أفضل موسم..."></label>
+  <label><input type="checkbox" id="f-women" style="display:inline;width:auto"> مناسب للنساء والعائلات (يظهر وسم)</label>
+  <b>الأيام</b>
+  <div id="days"></div>
+  <div class="row"><button class="btn2" id="add-day" type="button">+ يوم</button></div>
+  <div class="row" style="margin-top:14px"><button class="btn" type="submit" id="pub">نشر</button><button class="btn2" type="button" id="reset">برنامج جديد</button></div>
+  <p class="muted" style="font-size:.85rem">بعد النشر يظهر في الموقع خلال دقيقة تقريباً.</p>
+</form>
+
+<script>
+(function(){
+  var API='https://api.github.com', PATH='data/programs.json';
+  var $=function(i){return document.getElementById(i)}, tok='', repo='', list=[], sha='', editing=null;
+  function lsGet(k){try{return localStorage.getItem(k)||''}catch(e){return ''}}
+  function lsSet(k,v){try{v?localStorage.setItem(k,v):localStorage.removeItem(k)}catch(e){}}
+  function say(t,err){var m=$('msg');m.textContent=t;m.className=err?'err':'';m.style.display='block';clearTimeout(say.t);say.t=setTimeout(function(){m.style.display='none'},err?8000:4000)}
+  function hdr(){return {'Authorization':'Bearer '+tok,'Accept':'application/vnd.github+json'}}
+  function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
+  function b64d(s){return decodeURIComponent(escape(atob(s.replace(/\s/g,''))))}
+  function load(){
+    return fetch(API+'/repos/'+repo+'/contents/'+PATH+'?t='+Date.now(),{headers:hdr(),cache:'no-store'}).then(function(r){
+      if(r.status===401||r.status===403) throw new Error('الرمز غير صحيح أو ما له صلاحية.');
+      if(r.status===404){list=[];sha='';return}
+      if(!r.ok) throw new Error('تعذّر التحميل ('+r.status+')');
+      return r.json().then(function(j){sha=j.sha;list=JSON.parse(b64d(j.content))});
+    });
+  }
+  function commit(msg){
+    var body={message:msg,content:b64e(JSON.stringify(list,null,1)),branch:'main'}; if(sha) body.sha=sha;
+    return fetch(API+'/repos/'+repo+'/contents/'+PATH,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},hdr()),body:JSON.stringify(body)}).then(function(r){
+      if(r.status===409||r.status===422) throw new Error('تعارض: حدّث الصفحة وأعد المحاولة.');
+      if(!r.ok) throw new Error('فشل النشر ('+r.status+')');
+      return r.json().then(function(j){sha=j.content.sha});
+    });
+  }
+  function drawList(){
+    var box=$('list');box.textContent='';
+    list.forEach(function(p,i){
+      var d=document.createElement('div');d.className='item';
+      var s=document.createElement('span');s.textContent=p.title;d.appendChild(s);
+      var w=document.createElement('span');
+      [['تعديل',function(){edit(i)}],['↑',function(){move(i,-1)}],['↓',function(){move(i,1)}],['حذف',function(){del(i)}]].forEach(function(a){var b=document.createElement('button');b.type='button';b.className='btn2'+(a[0]==='حذف'?' red':'');b.style.marginInlineStart='6px';b.textContent=a[0];b.onclick=a[1];w.appendChild(b)});
+      d.appendChild(w);box.appendChild(d);
+    });
+    if(!list.length)box.textContent='لا توجد برامج.';
+  }
+  function show(){ $('setup').hidden=!!tok&&false; $('list-box').hidden=false;$('form').hidden=false;drawList();resetForm() }
+  function dayRow(d,t){
+    var r=document.createElement('div');r.className='day';
+    var a=document.createElement('input');a.value=d||'';a.placeholder='اليوم 1';a.className='dd';
+    var b=document.createElement('textarea');b.rows=2;b.value=t||'';b.placeholder='وش تسوي بهذا اليوم؟';b.className='dt';
+    var x=document.createElement('button');x.type='button';x.className='btn2 red';x.textContent='✕';x.onclick=function(){r.remove()};
+    r.appendChild(a);r.appendChild(b);r.appendChild(x);$('days').appendChild(r);
+  }
+  function resetForm(){editing=null;$('form-title').textContent='برنامج جديد';$('f-title').value='';$('f-note').value='';$('f-women').checked=false;$('days').textContent='';dayRow('اليوم 1','')}
+  function edit(i){var p=list[i];editing=i;$('form-title').textContent='تعديل: '+p.title;$('f-title').value=p.title;$('f-note').value=p.note||'';$('f-women').checked=!!p.women;$('days').textContent='';(p.days||[]).forEach(function(d){dayRow(d.d,d.t)});$('form').scrollIntoView({behavior:'smooth'})}
+  function move(i,k){var j=i+k;if(j<0||j>=list.length)return;var t=list[i];list[i]=list[j];list[j]=t;save('ترتيب البرامج')}
+  function del(i){if(!confirm('حذف «'+list[i].title+'»؟'))return;list.splice(i,1);save('حذف برنامج')}
+  function save(msg){say('جاري النشر...');return commit(msg).then(function(){say('تم. يظهر بالموقع خلال دقيقة.');drawList()}).catch(function(e){say(e.message,true);return load().then(drawList)})}
+  $('save-tok').onclick=function(){
+    tok=$('tok').value.trim()||tok; repo=$('repo').value.trim();
+    if(!tok){say('الصق الرمز',true);return}
+    say('جاري التحميل...');
+    load().then(function(){lsSet('ghTok',tok);lsSet('ghRepo',repo);$('tok').value='';say('تم الدخول');show()}).catch(function(e){say(e.message,true)});
+  };
+  $('out').onclick=function(){lsSet('ghTok','');tok='';list=[];$('list-box').hidden=true;$('form').hidden=true;say('تم تسجيل الخروج')};
+  $('add-day').onclick=function(){dayRow('اليوم '+($('days').children.length+1),'')};
+  $('reset').onclick=resetForm;
+  $('form').onsubmit=function(e){
+    e.preventDefault();
+    var days=[].map.call($('days').children,function(r){return {d:r.querySelector('.dd').value.trim(),t:r.querySelector('.dt').value.trim()}}).filter(function(d){return d.t});
+    if(!days.length){say('أضف يوم واحد على الأقل',true);return}
+    var p={id:editing!=null?list[editing].id:'p'+Date.now(),title:$('f-title').value.trim(),note:$('f-note').value.trim(),women:$('f-women').checked,days:days};
+    if(editing!=null)list[editing]=p;else list.push(p);
+    save(editing!=null?'تعديل برنامج':'إضافة برنامج').then(resetForm);
+  };
+  tok=lsGet('ghTok');repo=lsGet('ghRepo')||'SKjgoo/OMAN.';$('repo').value=repo;
+  if(tok){load().then(show).catch(function(e){say(e.message,true)})}
+})();
+</script>
+</body></html>
