@@ -4,7 +4,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>لوحة التحكم | اكتشف عُمان</title>
-<link rel="stylesheet" href="css/style.css?v=88">
+<link rel="stylesheet" href="css/style.css?v=89">
 <style>
 body{padding:16px;max-width:760px;margin:0 auto}h1{font-size:1.4rem}.box{background:var(--card,#fff);border:1px solid var(--line,#d9cfb8);border-radius:14px;padding:14px;margin:14px 0}
 label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;width:100%;margin-top:4px;padding:10px;font:inherit;border:1px solid var(--line,#d9cfb8);border-radius:10px;background:#fff;color:#1c2b2f}
@@ -26,7 +26,7 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
   <div class="row"><button class="btn2" id="save-tok" type="button">حفظ وتحميل البرامج</button><button class="btn2 red" id="out" type="button">تسجيل خروج</button></div>
 </div>
 
-<div class="row" id="tabs" hidden><button class="btn2" type="button" data-tab="prog" style="font-weight:700">برامج الرحلات</button><button class="btn2" type="button" data-tab="dest">الوجهات</button></div>
+<div class="row" id="tabs" hidden><button class="btn2" type="button" data-tab="prog" style="font-weight:700">برامج الرحلات</button><button class="btn2" type="button" data-tab="dest">الوجهات</button><button class="btn2" type="button" data-tab="ed">نصوص الموقع</button></div>
 <div id="tab-prog">
 <div class="box" id="list-box" hidden><b>البرامج المنشورة</b><div id="list"></div></div>
 
@@ -164,7 +164,106 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
 </script>
 </div>
 
-<script src="js/data.js?v=88"></script>
+<div id="tab-ed" hidden>
+<div class="box"><b>تحرير نصوص الموقع</b>
+  <p class="muted" style="font-size:.88rem">اختر صفحة، ثم <b>اضغط على أي نص</b> داخلها وعدّله وانشر. ما تحتاج كود. (لتعديل الوجهات استخدم تبويب «الوجهات».)</p>
+  <div class="row"><select id="e-page" style="padding:10px;font:inherit;border-radius:10px"></select><button class="btn2" id="e-open" type="button">فتح الصفحة</button></div>
+</div>
+<div class="box" id="e-frame-box" hidden>
+  <iframe id="e-frame" style="width:100%;height:62vh;border:1px solid #d9cfb8;border-radius:10px;background:#fff" title="الصفحة"></iframe>
+</div>
+<form class="box" id="e-form" hidden>
+  <b>النص المختار</b>
+  <label>النص الأصلي <textarea id="e-orig" rows="2" readonly></textarea></label>
+  <label>النص الجديد <textarea id="e-new" rows="4" required></textarea></label>
+  <label><input type="radio" name="e-scope" value="p" checked style="display:inline;width:auto"> هذه الصفحة فقط</label>
+  <label><input type="radio" name="e-scope" value="g" style="display:inline;width:auto"> كل الصفحات اللي يظهر فيها هذا النص</label>
+  <div class="row"><button class="btn" type="submit">حفظ ونشر</button><button class="btn2" type="button" id="e-revert">رجوع للأصل</button></div>
+  <p class="muted" style="font-size:.85rem">النص المعدّل يظهر بالعربي في كل اللغات. التغيير يظهر في الموقع خلال دقيقة.</p>
+</form>
+<div class="box"><b>التعديلات المحفوظة</b><div id="e-list"></div></div>
+<script>
+(function(){
+  var PATH='data/text-edits.js', EX={g:{},p:{}}, sha='', cur=null, W=null;
+  var $=function(i){return document.getElementById(i)}, A=function(){return window.ADM};
+  var PAGES=[['index.html','الرئيسية'],['destinations.html','الوجهات'],['destination.html?id=grand-mosque','صفحة وجهة'],['governorates.html','المحافظات'],['map.html','الخريطة'],['history.html','عُمان عبر الزمان'],['crafts.html','الحرف'],['adventure.html','المغامرات'],['eco.html','السياحة البيئية'],['trip.html','خطّط رحلتك'],['plan.html','التخطيط'],['programs.html','برامج الرحلات'],['safety.html','السلامة'],['sos.html','الطوارئ'],['vr.html','الواقع الافتراضي'],['about.html','عن الموقع'],['chat.html','المساعد']];
+  var norm=function(s){return s.replace(/\s+/g,' ').trim()};
+  var pkey=function(f){return f.split('?')[0].replace(/\.html$/,'')};
+  function url(){return A().api+'/repos/'+A().repo()+'/contents/'+PATH}
+  function load(){
+    return fetch(url()+'?t='+Date.now(),{headers:A().hdr(),cache:'no-store'}).then(function(r){
+      if(r.status===404){EX={g:{},p:{}};sha='';return}
+      if(!r.ok)throw new Error('تعذّر تحميل النصوص ('+r.status+')');
+      return r.json().then(function(j){sha=j.sha;var m=A().b64d(j.content).match(/window\.TEXT_EDITS\s*=\s*([\s\S]*?);?\s*$/);EX=m?JSON.parse(m[1]):{g:{},p:{}};EX.g=EX.g||{};EX.p=EX.p||{}});
+    });
+  }
+  function commit(msg){
+    var body={message:msg,content:A().b64e('window.TEXT_EDITS='+JSON.stringify(EX,null,1)+';\n'),branch:'main'};if(sha)body.sha=sha;
+    return fetch(url(),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},A().hdr()),body:JSON.stringify(body)}).then(function(r){
+      if(r.status===409||r.status===422)throw new Error('تعارض: حدّث الصفحة وأعد المحاولة.');
+      if(!r.ok)throw new Error('فشل النشر ('+r.status+')');
+      return r.json().then(function(j){sha=j.content.sha});
+    });
+  }
+  function draw(){
+    var box=$('e-list');box.textContent='';var n=0;
+    function add(scope,pg,from,to){
+      n++;var row=document.createElement('div');row.className='item';
+      var s=document.createElement('span');s.style.fontSize='.88rem';s.textContent=(scope==='g'?'[كل الصفحات] ':'['+pg+'] ')+from.slice(0,40)+(from.length>40?'…':'')+'  ←  '+to.slice(0,40)+(to.length>40?'…':'');row.appendChild(s);
+      var b=document.createElement('button');b.type='button';b.className='btn2 red';b.textContent='حذف';b.onclick=function(){if(scope==='g')delete EX.g[from];else{delete EX.p[pg][from];if(!Object.keys(EX.p[pg]).length)delete EX.p[pg]}save('حذف تعديل نص')};row.appendChild(b);box.appendChild(row);
+    }
+    Object.keys(EX.g).forEach(function(k){add('g','',k,EX.g[k])});
+    Object.keys(EX.p).forEach(function(pg){Object.keys(EX.p[pg]).forEach(function(k){add('p',pg,k,EX.p[pg][k])})});
+    if(!n)box.textContent='لا توجد تعديلات بعد.';
+  }
+  function save(msg){A().say('جاري النشر...');return commit(msg).then(function(){A().say('تم. يظهر بالموقع خلال دقيقة.');draw()}).catch(function(e){A().say(e.message,true);return load().then(draw)})}
+  function textNodeAt(doc,e){
+    var r=null,n=null;
+    try{ if(doc.caretRangeFromPoint){r=doc.caretRangeFromPoint(e.clientX,e.clientY);n=r&&r.startContainer}else if(doc.caretPositionFromPoint){r=doc.caretPositionFromPoint(e.clientX,e.clientY);n=r&&r.offsetNode} }catch(x){}
+    function ok(t){return t&&t.nodeType===3&&norm(t.nodeValue)&&!/^(SCRIPT|STYLE|TEXTAREA|NOSCRIPT)$/.test(t.parentNode.nodeName)}
+    if(ok(n))return n;
+    var el=e.target,k;
+    for(k=el.firstChild;k;k=k.nextSibling){if(ok(k))return k}
+    return null;
+  }
+  function attach(){
+    var d=$('e-frame').contentDocument;if(!d)return;W=$('e-frame').contentWindow;
+    var st=d.createElement('style');st.textContent='*{cursor:pointer!important}.__sel{outline:3px solid #c0392b!important;outline-offset:2px}#intro{display:none!important}';d.head.appendChild(st);
+    d.addEventListener('click',function(e){
+      e.preventDefault();e.stopPropagation();
+      var n=textNodeAt(d,e);if(!n){A().say('اضغط مباشرة على نص',true);return}
+      var old=d.querySelector('.__sel');if(old)old.classList.remove('__sel');
+      n.parentNode.classList.add('__sel');cur=n;
+      $('e-orig').value=n.__o||norm(n.nodeValue);$('e-new').value=norm(n.nodeValue);
+      $('e-form').hidden=false;$('e-form').scrollIntoView({behavior:'smooth',block:'nearest'});
+    },true);
+    d.addEventListener('submit',function(e){e.preventDefault()},true);
+  }
+  function apply(n,to){var v=n.nodeValue,l=v.match(/^\s*/)[0],t=v.match(/\s*$/)[0];n.nodeValue=l+to+t;n.__n=n.nodeValue}
+  $('e-form').onsubmit=function(e){
+    e.preventDefault();if(!cur)return;
+    var orig=$('e-orig').value, to=norm($('e-new').value).replace(/[<>]/g,''), scope=document.querySelector('input[name=e-scope]:checked').value, pg=pkey($('e-page').value);
+    if(!to){A().say('اكتب النص الجديد',true);return}
+    delete EX.g[orig];if(EX.p[pg]){delete EX.p[pg][orig];if(!Object.keys(EX.p[pg]).length)delete EX.p[pg]}
+    if(to!==orig){if(scope==='g')EX.g[orig]=to;else{EX.p[pg]=EX.p[pg]||{};EX.p[pg][orig]=to}}
+    cur.__o=to!==orig?orig:undefined;apply(cur,to);
+    save('تعديل نص: '+orig.slice(0,30)).then(function(){$('e-form').hidden=true});
+  };
+  $('e-revert').onclick=function(){$('e-new').value=$('e-orig').value};
+  $('e-open').onclick=function(){
+    try{sessionStorage.setItem('introSeen','1')}catch(x){}
+    $('e-form').hidden=true;cur=null;$('e-frame-box').hidden=false;$('e-frame').src=$('e-page').value;
+  };
+  $('e-frame').addEventListener('load',function(){setTimeout(attach,400)});
+  document.addEventListener('adm-login',function(){
+    $('e-page').innerHTML=PAGES.map(function(p){return '<option value="'+p[0]+'">'+p[1]+'</option>'}).join('');
+    load().then(draw).catch(function(e){A().say(e.message,true)});
+  });
+})();
+</script>
+</div>
+
+<script src="js/data.js?v=89"></script>
 <script>
 (function(){
   var API='https://api.github.com', PATH='data/programs.json';
@@ -221,7 +320,7 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
     say('جاري التحميل...');
     load().then(function(){lsSet('ghTok',tok);lsSet('ghRepo',repo);$('tok').value='';say('تم الدخول');show()}).catch(function(e){say(e.message,true)});
   };
-  $('out').onclick=function(){lsSet('ghTok','');tok='';list=[];$('tabs').hidden=true;$('list-box').hidden=true;$('form').hidden=true;$('tab-dest').hidden=true;$('tab-prog').hidden=false;say('تم تسجيل الخروج')};
+  $('out').onclick=function(){lsSet('ghTok','');tok='';list=[];$('tabs').hidden=true;$('list-box').hidden=true;$('form').hidden=true;$('tab-dest').hidden=true;$('tab-ed').hidden=true;$('tab-prog').hidden=false;say('تم تسجيل الخروج')};
   $('add-day').onclick=function(){dayRow('اليوم '+($('days').children.length+1),'')};
   $('reset').onclick=resetForm;
   $('form').onsubmit=function(e){
@@ -233,7 +332,7 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
     save(editing!=null?'تعديل برنامج':'إضافة برنامج').then(resetForm);
   };
   window.ADM={api:API,hdr:hdr,repo:function(){return repo},say:say,b64e:b64e,b64d:b64d};
-  [].forEach.call(document.querySelectorAll('#tabs [data-tab]'),function(b){b.onclick=function(){var t=b.dataset.tab;$('tab-prog').hidden=t!=='prog';$('tab-dest').hidden=t!=='dest';[].forEach.call(document.querySelectorAll('#tabs [data-tab]'),function(x){x.style.fontWeight=x===b?'700':'400'})}});
+  [].forEach.call(document.querySelectorAll('#tabs [data-tab]'),function(b){b.onclick=function(){var t=b.dataset.tab;$('tab-prog').hidden=t!=='prog';$('tab-dest').hidden=t!=='dest';$('tab-ed').hidden=t!=='ed';[].forEach.call(document.querySelectorAll('#tabs [data-tab]'),function(x){x.style.fontWeight=x===b?'700':'400'})}});
   tok=lsGet('ghTok');repo=lsGet('ghRepo')||'SKjgoo/OMAN.';$('repo').value=repo;
   if(tok){load().then(show).catch(function(e){say(e.message,true)})}
 })();
