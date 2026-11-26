@@ -23,10 +23,10 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
   <p class="muted" style="font-size:.85rem">الصق رمز GitHub الخاص بك (Fine-grained token بصلاحية Contents: Read and write على مستودع الموقع فقط). يُحفظ في متصفحك هنا فقط ولا يرسل لأي جهة غير GitHub.</p>
   <label>الرمز <input id="tok" type="password" autocomplete="off" placeholder="github_pat_..."></label>
   <label>المستودع <input id="repo" value="SKjgoo/OMAN." dir="ltr"></label>
-  <div class="row"><button class="btn2" id="save-tok" type="button">حفظ وتحميل البرامج</button><button class="btn2 red" id="out" type="button">تسجيل خروج</button></div>
+  <div class="row"><button class="btn2" id="save-tok" type="button">دخول</button><button class="btn2 red" id="out" type="button">تسجيل خروج</button></div>
 </div>
 
-<div class="row" id="tabs" hidden><button class="btn2" type="button" data-tab="prog" style="font-weight:700">برامج الرحلات</button><button class="btn2" type="button" data-tab="dest">الوجهات</button><button class="btn2" type="button" data-tab="ed">نصوص الموقع</button></div>
+<div class="row" id="tabs" hidden><button class="btn2" type="button" data-tab="prog" style="font-weight:700">برامج الرحلات</button><button class="btn2" type="button" data-tab="dest">الوجهات</button><button class="btn2" type="button" data-tab="ed">نصوص الموقع</button><button class="btn2 red" type="button" id="out2" style="flex:0 0 auto">خروج</button></div>
 <div id="tab-prog">
 <div class="box" id="list-box" hidden><b>البرامج المنشورة</b><div id="list"></div></div>
 
@@ -301,7 +301,7 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
     });
     if(!list.length)box.textContent='لا توجد برامج.';
   }
-  function show(){ $('setup').hidden=!!tok&&false; $('tabs').hidden=false;$('list-box').hidden=false;$('form').hidden=false;drawList();resetForm();document.dispatchEvent(new Event('adm-login')) }
+  function show(){ $('setup').hidden=true; $('tabs').hidden=false;$('list-box').hidden=false;$('form').hidden=false;drawList();resetForm();document.dispatchEvent(new Event('adm-login')) }
   function dayRow(d,t){
     var r=document.createElement('div');r.className='day';
     var a=document.createElement('input');a.value=d||'';a.placeholder='اليوم 1';a.className='dd';
@@ -320,7 +320,7 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
     say('جاري التحميل...');
     load().then(function(){lsSet('ghTok',tok);lsSet('ghRepo',repo);$('tok').value='';say('تم الدخول');show()}).catch(function(e){say(e.message,true)});
   };
-  $('out').onclick=function(){lsSet('ghTok','');tok='';list=[];$('tabs').hidden=true;$('list-box').hidden=true;$('form').hidden=true;$('tab-dest').hidden=true;$('tab-ed').hidden=true;$('tab-prog').hidden=false;say('تم تسجيل الخروج')};
+  $('out').onclick=function(){lsSet('ghTok','');tok='';list=[];$('setup').hidden=false;$('tabs').hidden=true;$('list-box').hidden=true;$('form').hidden=true;$('tab-dest').hidden=true;$('tab-ed').hidden=true;$('tab-prog').hidden=false;say('تم تسجيل الخروج')};
   $('add-day').onclick=function(){dayRow('اليوم '+($('days').children.length+1),'')};
   $('reset').onclick=resetForm;
   $('form').onsubmit=function(e){
@@ -331,6 +331,7 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
     if(editing!=null)list[editing]=p;else list.push(p);
     save(editing!=null?'تعديل برنامج':'إضافة برنامج').then(resetForm);
   };
+  $('out2').onclick=function(){$('out').click()};
   window.ADM={api:API,hdr:hdr,repo:function(){return repo},say:say,b64e:b64e,b64d:b64d};
   [].forEach.call(document.querySelectorAll('#tabs [data-tab]'),function(b){b.onclick=function(){var t=b.dataset.tab;$('tab-prog').hidden=t!=='prog';$('tab-dest').hidden=t!=='dest';$('tab-ed').hidden=t!=='ed';[].forEach.call(document.querySelectorAll('#tabs [data-tab]'),function(x){x.style.fontWeight=x===b?'700':'400'})}});
   tok=lsGet('ghTok');repo=lsGet('ghRepo')||'SKjgoo/OMAN.';$('repo').value=repo;
