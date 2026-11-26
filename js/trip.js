@@ -6,7 +6,7 @@
    - عند فشل خدمة المسار يُرسم خط مستقيم تقريبي مع تنبيه واضح.
    ============================================================ */
 const OSRM_URL = 'https://router.project-osrm.org/route/v1/driving/';
-const OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'];
+const OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
 const FUEL_RADIUS = 3000;     // متر من الطريق
 const MOSQUE_RADIUS = 1000;   // متر من الطريق
 const TOWN_RADIUS_KM = 15;    // المدن التي تُعرض كمناطق على الطريق
@@ -148,34 +148,49 @@ document.addEventListener('DOMContentLoaded', () => {
       `nwr["building"="mosque"](around:${MOSQUE_RADIUS},${c});` +
       `);out center tags;`;
   }
-  async function overpass(pts) {
+  /* نرسل الطلب لكل الخوادم في نفس الوقت ونأخذ أسرع رد ناجح */
+  function overpass(pts) {
     const body = 'data=' + encodeURIComponent(overpassQuery(pts));
-    let lastErr;
-    for (const ep of OVERPASS) {
-      try {
-        const r = await fetchWithTimeout(ep, {
-          method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body
-        }, 50000);
-        if (!r.ok) throw new Error('overpass ' + r.status);
-        const j = await r.json();
-        return j.elements || [];
-      } catch (e) { lastErr = e; }
-    }
-    throw lastErr;
+    return new Promise((resolve, reject) => {
+      const ctls = []; let left = OVERPASS.length, done = false, lastErr;
+      OVERPASS.forEach((ep) => {
+        const ctl = new AbortController(); ctls.push(ctl);
+        const t = setTimeout(() => ctl.abort(), 30000);
+        fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body, signal: ctl.signal })
+          .then((r) => { if (!r.ok) throw new Error('overpass ' + r.status); return r.json(); })
+          .then((j) => { if (done) return; done = true; ctls.forEach(c => { try { c.abort(); } catch (e) {} }); resolve(j.elements || []); })
+          .catch((e) => { lastErr = e; if (!done && --left === 0) reject(lastErr); })
+          .finally(() => clearTimeout(t));
+      });
+    });
   }
 
   async function getPois(coords, progress) {
     const pts = thin(coords, 2.5);
     const CH = 140, chunks = [];
     for (let i = 0; i < pts.length - 1; i += CH - 1) chunks.push(pts.slice(i, i + CH));
-    const seen = new Map(); let failed = 0;
-    for (let i = 0; i < chunks.length; i++) {
-      progress(i + 1, chunks.length);
-      try {
-        (await overpass(chunks[i])).forEach(el => seen.set(el.type + el.id, el));
-      } catch (e) { failed++; }
+    const seen = new Map(); let failed = 0, done = 0, next = 0;
+    progress(0, chunks.length);
+    async function worker() {
+      while (next < chunks.length) {
+        const i = next++;
+        try { (await overpass(chunks[i])).forEach(el => seen.set(el.type + el.id, el)); } catch (e) { failed++; }
+        progress(++done, chunks.length);
+      }
     }
+    await Promise.all([worker(), worker(), worker()]);
     return { elements: [...seen.values()], failed, total: chunks.length };
+  }
+
+  /* تخزين نتيجة المحطات والمساجد لنفس الرحلة (يوم كامل) لتفتح فورًا بعدها */
+  const poiKey = (A, B) => 'tripPoi2:' + [A.lat, A.lng, B.lat, B.lng].map(n => n.toFixed(3)).join(',');
+  function poiCacheGet(k) {
+    try { const o = JSON.parse(localStorage.getItem(k) || 'null'); if (o && Date.now() - o.t < 864e5 && o.v.failed === 0) return o.v; } catch (e) {}
+    return null;
+  }
+  function poiCacheSet(k, v) {
+    if (v.failed) return;
+    try { localStorage.setItem(k, JSON.stringify({ t: Date.now(), v })); } catch (e) {}
   }
 
   /* ---------- التشغيل ---------- */
@@ -205,16 +220,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const scale = cum[cum.length - 1] ? total / cum[cum.length - 1] : 1;
     for (let i = 0; i < cum.length; i++) cum[i] *= scale;
 
-    say('جارٍ البحث عن محطات الوقود والمساجد على الطريق…', true);
-    let pois = { elements: [], failed: 1, total: 1 };
-    pois = await getPois(coords, (i, n) => { if (id === runId) say(`جارٍ البحث عن محطات الوقود والمساجد على الطريق (${i}/${n})…`, true); });
-    if (id !== runId) return;
+    const pk = poiKey(A, B), cached = route.real ? poiCacheGet(pk) : null;
+    if (cached) { build(A, B, route, coords, cum, total, cached); say('', false); return; }
 
-    build(A, B, route, coords, cum, total, pois);
+    /* نعرض الطريق فورًا، ثم نكمّل المحطات والمساجد في الخلفية */
+    build(A, B, route, coords, cum, total, { elements: [], failed: 0, total: 1, pending: true });
+    say('جارٍ تحميل محطات الوقود والمساجد على الطريق… (يمكنك تصفّح الطريق الآن)', true);
+    const pois = await getPois(coords, (i, n) => { if (id === runId) say(`جارٍ تحميل محطات الوقود والمساجد (${i}/${n})… يمكنك تصفّح الطريق الآن`, true); });
+    if (id !== runId) return;
+    if (route.real) poiCacheSet(pk, pois);
+    build(A, B, route, coords, cum, total, pois, true);
     say('', false);
   }
 
-  function build(A, B, route, coords, cum, total, pois) {
+  function build(A, B, route, coords, cum, total, pois, again) {
+    const pend = !!pois.pending;
     /* المناطق */
     const towns = TOWNS.map(t => {
       const n = nearestOnRoute([t.lat, t.lng], coords, cum);
@@ -261,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* فجوات الوقود */
     const gaps = [];
-    if (pois.failed < pois.total) {
+    if (!pend && pois.failed < pois.total) {
       const ks = [0, ...fuel.map(f => f.km), total];
       for (let i = 1; i < ks.length; i++) {
         if (ks[i] - ks[i - 1] >= GAP_KM) gaps.push({ type: 'gap', km: ks[i - 1] + (ks[i] - ks[i - 1]) / 2, from: ks[i - 1], to: ks[i], name: 'مسافة طويلة بلا محطات وقود' });
@@ -271,21 +291,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const start = { type: 'start', name: 'نقطة الانطلاق: ' + A.label, lat: A.lat, lng: A.lng, km: 0, off: 0 };
     const end = { type: 'end', name: 'الوصول: ' + B.label, lat: B.lat, lng: B.lng, km: total, off: 0 };
     items = [start, ...towns, ...destNear, ...fuel, ...mosques, ...gaps, end].sort((a, b) => a.km - b.km || (a.type === 'start' ? -1 : 0));
-    activeFilter = 'all'; showAllMosques = false;
+    if (!again) { activeFilter = 'all'; showAllMosques = false; }
 
     /* الملخص */
     document.getElementById('stats').innerHTML = [
       [fmtKm(total), 'المسافة'],
       [route.min ? fmtDur(route.min) : '—', 'زمن القيادة التقريبي'],
       [govSeq.length || '—', 'محافظات'],
-      [pois.failed < pois.total ? fuel.length : '؟', 'محطات وقود'],
-      [pois.failed < pois.total ? mosques.length : '؟', 'مساجد على الطريق']
+      [pend ? '…' : pois.failed < pois.total ? fuel.length : '؟', 'محطات وقود'],
+      [pend ? '…' : pois.failed < pois.total ? mosques.length : '؟', 'مساجد على الطريق']
     ].map(([b, s]) => `<div><b>${b}</b><span>${s}</span></div>`).join('');
 
     /* تنبيهات */
     const notes = [];
     if (!route.real) notes.push('تعذّر الاتصال بخدمة المسارات، فالخط المعروض مستقيم وتقريبي وليس مسار الطريق الفعلي، والمسافة بخط مستقيم. جرّب مرة أخرى بعد قليل أو افتح الاتجاهات في خرائط جوجل.');
-    if (pois.failed >= pois.total) notes.push('تعذّر جلب المساجد ومحطات الوقود من خدمة OpenStreetMap حاليًا. يمكنك المحاولة لاحقًا أو البحث عنها في خرائط جوجل.');
+    if (pend) { /* لا تنبيه أثناء التحميل */ }
+    else if (pois.failed >= pois.total) notes.push('تعذّر جلب المساجد ومحطات الوقود من خدمة OpenStreetMap حاليًا. يمكنك المحاولة لاحقًا أو البحث عنها في خرائط جوجل.');
     else if (pois.failed > 0) notes.push(`لم يكتمل جلب البيانات لجزء من الطريق (${pois.failed} من ${pois.total} مقاطع)، فقد تنقص بعض المحطات والمساجد.`);
     if (gaps.length) notes.push('تنبّه: ' + gaps.map(g => `بين الكيلومتر ${Math.round(g.from)} والكيلومتر ${Math.round(g.to)} لا توجد محطات مسجّلة (${Math.round(g.to - g.from)} كم)`).join('، ') + '. املأ الخزان قبلها.');
     const govs = new Set([A.gov, B.gov]);
@@ -306,9 +327,11 @@ document.addEventListener('DOMContentLoaded', () => {
     renderList();
     renderMap(A, B, coords);
     $result.hidden = false;
-    if (window.tripExtras) { try { window.tripExtras({ A, B, coords, cum, total, destNear }); } catch (e) { console.warn(e); } }
-    setTimeout(() => { map.invalidateSize(); map.fitBounds(L.latLngBounds(coords), { padding: [30, 30] }); }, 50);
-    $result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!again && window.tripExtras) { try { window.tripExtras({ A, B, coords, cum, total, destNear }); } catch (e) { console.warn(e); } }
+    if (!again) {
+      setTimeout(() => { map.invalidateSize(); map.fitBounds(L.latLngBounds(coords), { padding: [30, 30] }); }, 50);
+      $result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   /* ---------- العرض ---------- */
