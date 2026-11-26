@@ -170,7 +170,7 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
   <div class="row"><select id="e-page" style="padding:10px;font:inherit;border-radius:10px"></select><button class="btn2" id="e-open" type="button">فتح الصفحة</button></div>
 </div>
 <div class="box" id="e-frame-box" hidden>
-  <iframe id="e-frame" style="width:100%;height:62vh;border:1px solid #d9cfb8;border-radius:10px;background:#fff" title="الصفحة"></iframe>
+  <div id="e-wrap" style="width:100%;height:68vh;overflow:auto;-webkit-overflow-scrolling:touch;border:1px solid #d9cfb8;border-radius:10px;background:#fff"><iframe id="e-frame" scrolling="no" style="display:block;border:0;width:360px;height:1200px;background:#fff" title="الصفحة"></iframe></div>
 </div>
 <form class="box" id="e-form" hidden>
   <b>النص المختار</b>
@@ -252,9 +252,12 @@ label{display:block;font-size:.9rem;margin:10px 0}input,textarea{display:block;w
   $('e-revert').onclick=function(){$('e-new').value=$('e-orig').value};
   $('e-open').onclick=function(){
     try{sessionStorage.setItem('introSeen','1')}catch(x){}
-    $('e-form').hidden=true;cur=null;$('e-frame-box').hidden=false;$('e-frame').src=$('e-page').value;
+    $('e-form').hidden=true;cur=null;$('e-frame-box').hidden=false;
+    var w=Math.max(300,$('e-wrap').clientWidth-2);$('e-frame').style.width=w+'px';$('e-frame').style.height='1200px';
+    setTimeout(function(){$('e-frame').src=$('e-page').value},50);
   };
-  $('e-frame').addEventListener('load',function(){setTimeout(attach,400)});
+  function fit(){try{var f=$('e-frame'),d=f.contentDocument;if(!d||!d.documentElement)return;f.style.width=Math.max(300,$('e-wrap').clientWidth-2)+'px';f.contentWindow.dispatchEvent(new Event('resize'));f.style.height=Math.max(600,d.documentElement.scrollHeight+20)+'px'}catch(x){}}
+  $('e-frame').addEventListener('load',function(){setTimeout(attach,400);[300,1200,3000].forEach(function(t){setTimeout(fit,t)})});
   document.addEventListener('adm-login',function(){
     $('e-page').innerHTML=PAGES.map(function(p){return '<option value="'+p[0]+'">'+p[1]+'</option>'}).join('');
     load().then(draw).catch(function(e){A().say(e.message,true)});
