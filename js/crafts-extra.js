@@ -53,12 +53,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const st = CRAFT_STORY[id] || { story: c.desc, steps: [] };
     const link = craftUrl(id);
     const body = ov.querySelector('.cm-body');
-    const has3d = Craft3D.has(CRAFT_MODEL[id]);
+    const khan = id === 'khanjar' && typeof KhanjarView !== 'undefined';
+    const has3d = khan || Craft3D.has(CRAFT_MODEL[id]);
     let qr = ''; try { qr = QR.svg(link, 150); } catch (e) { qr = ''; }
     body.innerHTML = `
       <h2>${esc(c.name)}</h2>
       <div class="cm-grid">
-        <div class="cm-3d">${has3d ? '<canvas width="520" height="520" aria-label="مجسّم ثلاثي الأبعاد"></canvas><small class="muted">اسحب لتدوير المجسّم. نموذج مبسّط للتعريف بالشكل.</small>' : '<div class="cm-no3d"><p class="muted">لا يتوفر مجسّم ثلاثي الأبعاد لهذه الحرفة بعد.</p></div>'}</div>
+        <div class="cm-3d">${khan ? '<div class="kh-view" aria-label="خنجر عُماني: اسحب لتدويره"></div><small class="muted">اسحب يمينًا ويسارًا لتدوير الخنجر (من الواجهة إلى الجانب).</small>' : has3d ? '<canvas width="520" height="520" aria-label="مجسّم ثلاثي الأبعاد"></canvas><small class="muted">اسحب لتدوير المجسّم. نموذج مبسّط للتعريف بالشكل.</small>' : '<div class="cm-no3d"><p class="muted">لا يتوفر مجسّم ثلاثي الأبعاد لهذه الحرفة بعد.</p></div>'}</div>
         <div class="cm-text">
           <div class="tag-row"><span class="tag">${esc(c.cat)}</span><span class="tag">${esc(c.material)}</span></div>
           <h3>قصة الحرفة</h3><p class="cm-story">${esc(st.story)}</p>
@@ -71,7 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof Voice !== 'undefined' && Voice.ok) body.querySelector('.cm-actions').appendChild(Voice.button(() => c.name + '. ' + st.story + ' ' + st.steps.join('. ')));
     $('cm-copy').addEventListener('click', async (e) => { try { await navigator.clipboard.writeText(link); e.target.textContent = 'تم النسخ'; } catch (x) { e.target.textContent = link; } });
     ov.hidden = false; document.body.classList.add('cm-open');
-    const cv = body.querySelector('canvas'); if (cv) viewer = Craft3D.create(cv, CRAFT_MODEL[id]);
+    const kv = body.querySelector('.kh-view'); const cv = body.querySelector('canvas');
+    if (kv) viewer = KhanjarView.create(kv); else if (cv) viewer = Craft3D.create(cv, CRAFT_MODEL[id]);
     ov.querySelector('.cm-x').focus();
   }
 
