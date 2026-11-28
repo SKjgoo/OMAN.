@@ -8,6 +8,7 @@
 const OSRM_URL = 'https://router.project-osrm.org/route/v1/driving/';
 const OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
 const FUEL_RADIUS = 3000;     // متر من الطريق
+const REST_RADIUS = 300;
 const MOSQUE_RADIUS = 1000;   // متر من الطريق
 const TOWN_RADIUS_KM = 15;    // المدن التي تُعرض كمناطق على الطريق
 const GAP_KM = 100;           // تنبيه عند مسافة طويلة بلا وقود
@@ -34,13 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
     Object.entries(groups).forEach(([g, list]) => {
       html += `<optgroup label="${g}">${list.map(p => `<option value="${p.key}">${p.label}</option>`).join('')}</optgroup>`;
     });
+    if (sel === $to) html = '<option value="" disabled>اختر الوجهة</option>' + html;
     sel.innerHTML = html;
-    if (keep) sel.value = keep;
+    if (keep) sel.value = keep; else if (sel === $to) sel.value = '';
   }
   const townKey = (name) => { const i = TOWNS.findIndex(t => t.n === name); return i >= 0 ? 't' + i : ''; };
   fillSelect($from); fillSelect($to);
   $from.value = townKey('مسقط');
-  $to.value = townKey('نزوى');
+  $to.value = '';
 
   function resolve(key) {
     if (key === 'me' && myLoc) return { label: 'موقعي', lat: myLoc.lat, lng: myLoc.lng, gov: null };
@@ -76,6 +78,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('trip-form').addEventListener('submit', (e) => { e.preventDefault(); run(); });
+  /* خطوة واحدة: اختيار الوجهة يعرض المسار مباشرة */
+  $to.addEventListener('change', () => { if ($to.value) run(); });
+  $from.addEventListener('change', () => { if ($to.value) run(); });
+  /* إن كان إذن الموقع ممنوحًا سابقًا ننطلق من موقعك تلقائيًا */
+  try { if (navigator.permissions && !qs('from')) navigator.permissions.query({ name: 'geolocation' }).then(r => { if (r.state === 'granted') document.getElementById('useloc').click(); }); } catch (e) {}
+  /* اختصارات: الوقود والمساجد والمطاعم */
+  document.getElementById('quick').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-q]'); if (!b) return;
+    if ($result.hidden) { say('اختر الوجهة أولًا ثم اضغط الاختصار.', true); return; }
+    setFilter(b.dataset.q);
+    document.getElementById('stops').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
 
   /* ---------- أدوات جغرافية ---------- */
   const R = 6371;
@@ -146,6 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `nwr["amenity"="fuel"](around:${FUEL_RADIUS},${c});` +
       `nwr["amenity"="place_of_worship"]["religion"="muslim"](around:${MOSQUE_RADIUS},${c});` +
       `nwr["building"="mosque"](around:${MOSQUE_RADIUS},${c});` +
+      `nwr["amenity"~"^(restaurant|fast_food)$"](around:${REST_RADIUS},${c});` +
       `);out center tags;`;
   }
   /* نرسل الطلب لكل الخوادم في نفس الوقت ونأخذ أسرع رد ناجح */
@@ -183,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* تخزين نتيجة المحطات والمساجد لنفس الرحلة (يوم كامل) لتفتح فورًا بعدها */
-  const poiKey = (A, B) => 'tripPoi2:' + [A.lat, A.lng, B.lat, B.lng].map(n => n.toFixed(3)).join(',');
+  const poiKey = (A, B) => 'tripPoi3:' + [A.lat, A.lng, B.lat, B.lng].map(n => n.toFixed(3)).join(',');
   function poiCacheGet(k) {
     try { const o = JSON.parse(localStorage.getItem(k) || 'null'); if (o && Date.now() - o.t < 864e5 && o.v.failed === 0) return o.v; } catch (e) {}
     return null;
@@ -265,11 +280,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (lat == null || lng == null) return;
       const tags = el.tags || {};
       const isFuel = tags.amenity === 'fuel';
+      const isRest = tags.amenity === 'restaurant' || tags.amenity === 'fast_food';
       const n = nearestOnRoute([lat, lng], coords, cum);
-      const limit = (isFuel ? FUEL_RADIUS : MOSQUE_RADIUS) / 1000;
+      const limit = (isFuel ? FUEL_RADIUS : isRest ? REST_RADIUS : MOSQUE_RADIUS) / 1000;
       if (n.off > limit * 1.05) return;
-      const name = tags['name:ar'] || tags.name || tags['name:en'] || tags.brand || (isFuel ? 'محطة وقود' : 'مسجد');
-      poi.push({ type: isFuel ? 'fuel' : 'mosque', name, brand: tags.brand || '', lat, lng, km: n.km, off: n.off });
+      const name = tags['name:ar'] || tags.name || tags['name:en'] || tags.brand || (isFuel ? 'محطة وقود' : isRest ? 'مطعم' : 'مسجد');
+      poi.push({ type: isFuel ? 'fuel' : isRest ? 'restaurant' : 'mosque', name, brand: tags.brand || '', lat, lng, km: n.km, off: n.off });
     });
     /* إزالة المكرر القريب جدًا */
     const uniq = [];
@@ -278,6 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     const fuel = uniq.filter(p => p.type === 'fuel');
     const mosques = uniq.filter(p => p.type === 'mosque');
+    const rests = uniq.filter(p => p.type === 'restaurant');
 
     /* فجوات الوقود */
     const gaps = [];
@@ -290,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const start = { type: 'start', name: 'نقطة الانطلاق: ' + A.label, lat: A.lat, lng: A.lng, km: 0, off: 0 };
     const end = { type: 'end', name: 'الوصول: ' + B.label, lat: B.lat, lng: B.lng, km: total, off: 0 };
-    items = [start, ...towns, ...destNear, ...fuel, ...mosques, ...gaps, end].sort((a, b) => a.km - b.km || (a.type === 'start' ? -1 : 0));
+    items = [start, ...towns, ...destNear, ...fuel, ...mosques, ...rests, ...gaps, end].sort((a, b) => a.km - b.km || (a.type === 'start' ? -1 : 0));
     if (!again) { activeFilter = 'all'; showAllMosques = false; }
 
     /* الملخص */
@@ -335,31 +352,36 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ---------- العرض ---------- */
-  const ICON = { start: 'أ', end: 'ب', region: '•', dest: '◆', fuel: 'و', mosque: 'م', gap: '!' };
-  const LABEL = { dest: 'وجهة سياحية على طريقك', region: 'منطقة', fuel: 'محطة وقود', mosque: 'مسجد', gap: 'تنبيه', start: 'بداية', end: 'نهاية' };
+  const ICON = { start: 'أ', end: 'ب', region: '•', dest: '◆', fuel: 'و', mosque: 'م', restaurant: 'ط', gap: '!' };
+  const LABEL = { dest: 'وجهة سياحية على طريقك', region: 'منطقة', fuel: 'محطة وقود', mosque: 'مسجد', restaurant: 'مطعم', gap: 'تنبيه', start: 'بداية', end: 'نهاية' };
 
   function renderFilters(nf, nm, nr) {
-    const defs = [['all', 'الكل'], ['dest', `وجهات (${items.filter(i => i.type === 'dest').length})`], ['region', `المناطق (${nr})`], ['fuel', `محطات الوقود (${nf})`], ['mosque', `المساجد (${nm})`]];
+    const defs = [['all', 'الكل'], ['dest', `وجهات (${items.filter(i => i.type === 'dest').length})`], ['region', `المناطق (${nr})`], ['fuel', `محطات الوقود (${nf})`], ['mosque', `المساجد (${nm})`], ['restaurant', `المطاعم (${items.filter(i => i.type === 'restaurant').length})`]];
     const el = document.getElementById('filters');
     el.innerHTML = defs.map(([k, l]) => `<button type="button" class="chip ${k === activeFilter ? 'on' : ''}" data-f="${k}">${l}</button>`).join('');
-    el.onclick = (e) => {
-      const b = e.target.closest('[data-f]'); if (!b) return;
-      activeFilter = b.dataset.f; showAllMosques = false;
-      el.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.f === activeFilter));
-      renderList(); syncLayers();
-    };
+    el.onclick = (e) => { const b = e.target.closest('[data-f]'); if (b) setFilter(b.dataset.f); };
+  }
+  function setFilter(k) {
+    activeFilter = k; showAllMosques = false;
+    document.querySelectorAll('#filters .chip').forEach(c => c.classList.toggle('on', c.dataset.f === activeFilter));
+    document.querySelectorAll('#quick [data-q]').forEach(c => c.classList.toggle('on', c.dataset.q === activeFilter));
+    renderList(); syncLayers();
   }
 
   function visibleItems() {
     const keep = (it) => it.type === 'start' || it.type === 'end' ||
       activeFilter === 'all' || it.type === activeFilter || (it.type === 'gap' && (activeFilter === 'fuel'));
     let list = items.filter(keep);
-    const m = list.filter(i => i.type === 'mosque');
-    if (!showAllMosques && m.length > MOSQUE_PREVIEW) {
-      const allow = new Set(m.filter((_, i) => i % Math.ceil(m.length / MOSQUE_PREVIEW) === 0));
-      list = list.filter(i => i.type !== 'mosque' || allow.has(i));
-      list.hiddenMosques = m.length - allow.size;
-    }
+    let hidden = 0;
+    ['mosque', 'restaurant'].forEach((t) => {
+      const m = list.filter(i => i.type === t);
+      if (!showAllMosques && m.length > MOSQUE_PREVIEW) {
+        const allow = new Set(m.filter((_, i) => i % Math.ceil(m.length / MOSQUE_PREVIEW) === 0));
+        list = list.filter(i => i.type !== t || allow.has(i));
+        hidden += m.length - allow.size;
+      }
+    });
+    list.hiddenMosques = hidden;
     return list;
   }
 
@@ -371,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const cls = it.type === 'gap' ? 'gap' : '';
       let sub = '';
       if (it.type === 'region') sub = `${esc(govById(it.gov).name)} • ${it.off < 1 ? 'على الطريق' : 'يبعد ' + fmtKm(it.off)}`;
-      else if (it.type === 'fuel' || it.type === 'mosque') sub = it.off < 0.1 ? 'على الطريق' : `يبعد عن الطريق ${Math.round(it.off * 1000)} م`;
+      else if (it.type === 'fuel' || it.type === 'mosque' || it.type === 'restaurant') sub = it.off < 0.1 ? 'على الطريق' : `يبعد عن الطريق ${Math.round(it.off * 1000)} م`;
       else if (it.type === 'dest') sub = `<a href="destination.html?id=${it.id}">التفاصيل</a> • ${it.off < 1 ? 'على الطريق' : 'تبعد ' + fmtKm(it.off)}`;
       else if (it.type === 'gap') sub = `نحو ${Math.round(it.to - it.from)} كم دون محطة وقود مسجّلة`;
       const title = it.type === 'region' ? `${esc(it.name)}` : esc(it.name);
@@ -380,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="stop-body"><span class="stop-km">${it.type === 'gap' ? '' : 'كم ' + Math.round(it.km)}</span>
           <b>${title}</b><small>${LABEL[it.type]}${sub ? ' • ' + sub : ''}</small></span>
       </li>`;
-    }).join('') + (list.hiddenMosques ? `<li><button type="button" class="btn light more-btn" id="more">عرض كل المساجد (${list.hiddenMosques} إضافية)</button></li>` : '');
+    }).join('') + (list.hiddenMosques ? `<li><button type="button" class="btn light more-btn" id="more">عرض الكل (${list.hiddenMosques} إضافية)</button></li>` : '');
     const more = document.getElementById('more');
     if (more) more.onclick = () => { showAllMosques = true; renderList(); syncLayers(); };
   }
@@ -390,7 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return L.marker([it.lat, it.lng], {
       icon: L.divIcon({
         className: 'pin-wrap',
-        html: `<div class="pin pin-${cls}" style="${it.type === 'mosque' || it.type === 'fuel' ? 'width:28px;height:28px;font-size:14px' : ''}">${ICON[it.type]}</div>`,
+        html: `<div class="pin pin-${cls}" style="${it.type === 'mosque' || it.type === 'fuel' || it.type === 'restaurant' ? 'width:28px;height:28px;font-size:14px' : ''}">${ICON[it.type]}</div>`,
         iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -16]
       }), title: it.name
     }).bindPopup(`<h4>${esc(it.name)}</h4><p class="muted">${LABEL[it.type]} • كم ${Math.round(it.km)} من البداية</p>` +

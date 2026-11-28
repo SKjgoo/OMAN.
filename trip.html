@@ -24,12 +24,12 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="أرشدني">
   <meta name="application-name" content="أرشدني">
-  <link rel="stylesheet" href="css/style.css?v=94">
+  <link rel="stylesheet" href="css/style.css?v=95">
 </head>
 <body class="has-rail" data-page="trip">
   <div id="site-header"></div>
 
-  <header class="pg-title trip-title"><svg viewBox="0 0 24 24" width="54" height="54" fill="none" stroke="#3a75d0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-5-4.500-5-8.500a5 5 0 0110 0C17 16.500 12 21 12 21z" transform="translate(5 -9) scale(.8)"/><circle cx="6" cy="18" r="2.500"/><path d="M8.500 18H14a3 3 0 000-6h-2"/></svg><h1>خطّط رحلتك</h1><p>اختر نقطة الانطلاق والوجهة وسيعرض لك أفضل مسار، والمساجد ومحطات الوقود والمطاعم على الطريق.</p></header>
+  <header class="pg-title trip-title"><svg viewBox="0 0 24 24" width="54" height="54" fill="none" stroke="#3a75d0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H14a3 3 0 000-6h-4a3 3 0 010-6h5.5"/></svg><h1>خطّط رحلتك</h1><p>اختر نقطة الانطلاق والوجهة وسيعرض لك أفضل مسار، والمساجد ومحطات الوقود والمطاعم على الطريق.</p></header>
 
   <section class="container trip-wrap" style="padding-bottom:60px">
     <form class="trip-form" id="trip-form">
@@ -42,8 +42,13 @@
       </label>
       <button class="btn" type="submit">عرض المسار ➤</button>
     </form>
+    <div class="trip-quick" id="quick" role="group" aria-label="اختصارات الطريق">
+      <button type="button" data-q="fuel"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V5a2 2 0 012-2h6a2 2 0 012 2v16M4 21h12M8 8h4M15 9l3 2v6a1.500 1.500 0 003 0V8l-3-3"/></svg><span>محطات الوقود</span></button>
+      <button type="button" data-q="mosque"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-8a8 8 0 0116 0v8M2 21h20M12 5V2M9 21v-4a3 3 0 016 0v4"/></svg><span>المساجد</span></button>
+      <button type="button" data-q="restaurant"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8M4 3v5a3 3 0 006 0V3M7 11v10M17 21V3c-2.500 1.500-3.500 4-3.500 8H17"/></svg><span>المطاعم</span></button>
+    </div>
     <div class="trip-sub">
-      <button class="btn small light" id="useloc" type="button">انطلق من موقعي الحالي</button>
+      <button class="btn small light" id="useloc" type="button">استخدم موقعي الحالي</button>
       <span class="muted" id="locstate"></span>
     </div>
 
@@ -90,19 +95,19 @@
   <div id="site-footer"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="js/data.js?v=94"></script>
-  <script src="data/dest-extra.js?v=94"></script>
-  <script src="js/dest-apply.js?v=94"></script>
-  <script src="js/places.js?v=94"></script>
-  <script src="js/crafts-data.js?v=94"></script>
-  <script src="js/lodging-data.js?v=94"></script>
-  <script src="js/risk.js?v=94"></script>
-  <script src="js/common.js?v=94"></script>
-  <script src="data/text-edits.js?v=94"></script>
-  <script src="js/text-edits.js?v=94"></script>
-  <script src="js/currency.js?v=94" defer></script>
-  <script src="js/mapcore.js?v=94"></script>
-  <script src="js/trip.js?v=94"></script>
-  <script src="js/trip-plan.js?v=94"></script>
+  <script src="js/data.js?v=95"></script>
+  <script src="data/dest-extra.js?v=95"></script>
+  <script src="js/dest-apply.js?v=95"></script>
+  <script src="js/places.js?v=95"></script>
+  <script src="js/crafts-data.js?v=95"></script>
+  <script src="js/lodging-data.js?v=95"></script>
+  <script src="js/risk.js?v=95"></script>
+  <script src="js/common.js?v=95"></script>
+  <script src="data/text-edits.js?v=95"></script>
+  <script src="js/text-edits.js?v=95"></script>
+  <script src="js/currency.js?v=95" defer></script>
+  <script src="js/mapcore.js?v=95"></script>
+  <script src="js/trip.js?v=95"></script>
+  <script src="js/trip-plan.js?v=95"></script>
 </body>
 </html>
