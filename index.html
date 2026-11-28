@@ -10,7 +10,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="ar_OM">
   <meta property="og:title" content="اكتشف عُمان | دليل السياحة في سلطنة عُمان">
@@ -24,161 +23,51 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="أرشدني">
   <meta name="application-name" content="أرشدني">
-  <link rel="stylesheet" href="css/style.css?v=92">
+  <link rel="stylesheet" href="css/style.css?v=93">
 </head>
 <body class="has-rail" data-page="home">
   <div id="site-header"></div>
 
-  <!-- ===== الواجهة الرئيسية ===== -->
-  <section class="hero">
-    <div class="container">
-      <span class="eyebrow">سلطنة عُمان</span>
-      <h1>اكتشف <span>جمال عُمان</span><br>من الجبال إلى البحر</h1>
-      <p class="lead">من قلاع نزوى وأسواق مطرح إلى كثبان الشرقية وخريف ظفار. تصفّح الوجهات، شاهدها على الخريطة، وعِش جولة افتراضية 360° من هاتفك.</p>
-      <form class="search-box" action="destinations.html" method="get" role="search">
-        <input type="search" name="q" placeholder="ابحث عن وجهة: وادي شاب، نزوى، صلالة…" aria-label="بحث">
-        <button class="btn" type="submit">ابحث</button>
+  <!-- ===== الرئيسية ===== -->
+  <header class="hm-hero" id="hm-hero">
+    <div class="hm-hero-img"></div>
+    <div class="hm-hero-in">
+      <h1>اكتشف جمال عُمان</h1>
+      <p>وجهات • تخطيط رحلات • خرائط • جولات 360°</p>
+      <form class="hm-search" action="destinations.html" method="get" role="search">
+        <button type="submit" aria-label="بحث"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
+        <input type="search" name="q" placeholder="ابحث عن وجهة ..." aria-label="ابحث عن وجهة" enterkeyhint="search">
       </form>
     </div>
-  </section>
+  </header>
 
-  <!-- ===== الإحصاءات ===== -->
-  <div class="container">
-    <div class="stats">
-      <div class="stat"><b id="stat-gov">11</b><span>محافظة</span></div>
-      <div class="stat"><b id="stat-dest">0</b><span>وجهة سياحية</span></div>
-      <div class="stat"><b id="stat-vr">0</b><span>جولة VR 360°</span></div>
-      <div class="stat"><b id="stat-cat">6</b><span>أنواع من التجارب</span></div>
-    </div>
-  </div>
+  <main class="hm-main">
+    <nav class="hm-grid" aria-label="اختصارات"><a class="hm-sc" href="map.html" style="--c:#2e8b57"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span>الخريطة</span></a><a class="hm-sc" href="trip.html" style="--c:#2f5fc4"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H14a3 3 0 000-6h-4a3 3 0 010-6h5.5"/></svg><span>خطّط رحلتك</span></a><a class="hm-sc" href="destinations.html" style="--c:#c0392b"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.800 12 21 12 21z"/><circle cx="12" cy="9.500" r="2.500"/></svg><span>الوجهات</span></a><a class="hm-sc" href="vr.html" style="--c:#6a4fb3"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="13" rx="9" ry="4.500"/><path d="M8.500 9.500L12 6l3.500 3.500"/><path d="M12 6v7"/></svg><span>جولة 360°</span></a><a class="hm-sc" href="adventure.html" style="--c:#c9731f"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20L12 4l9 16z"/><path d="M9 20l3-5 3 5"/></svg><span>المغامرات</span></a><a class="hm-sc" href="safety.html" style="--c:#2a8fc7"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4 4 0 010-8 5.500 5.500 0 0110.500 1.500A3.300 3.300 0 0117 18z"/><path d="M17 4v1.500M21 8h-1.500M20 5l-1 1"/></svg><span>الطقس</span></a></nav>
 
-  <!-- ===== عُمان عبر الزمان ===== -->
-  <section class="section">
-    <div class="container">
-      <div class="section-head">
-        <div><span class="kicker">جديد</span><h2>عُمان عبر الزمان</h2></div>
-        <a class="btn dark" href="history.html">ابدأ الرحلة في التاريخ ←</a>
-      </div>
-      <p class="muted" style="max-width:640px">من أدوات الإنسان الأول في ظفار إلى مجان والنحاس، ثم اللبان والأئمة واليعاربة والبوسعيد حتى عُمان 2040، مع إنجازات كل حاكم والأماكن التي تحكي قصته.</p>
-      <div class="chips" id="era-chips" style="margin-top:14px"></div>
-    </div>
-  </section>
+    <section class="hm-feat">
+      <div class="hm-feat-head"><h2>وجهات مميزة</h2><a href="destinations.html">عرض الكل ‹</a></div>
+      <div class="hm-cards" id="featured"></div>
+    </section>
+  </main>
 
-  <!-- ===== الفئات ===== -->
-  <section class="section">
-    <div class="container">
-      <div class="section-head">
-        <div><span class="kicker">اختر تجربتك</span><h2>ماذا تحب أن تستكشف؟</h2></div>
-        <p>من التراث والقلاع إلى الصحراء والبحر والجبال، اختر الفئة التي تناسب مزاجك.</p>
-      </div>
-      <div class="grid" id="cat-tiles"></div>
-    </div>
-  </section>
+  <nav class="bnav" aria-label="التنقل السفلي">
+    <a href="index.html" class="on" aria-current="page"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg><span>الرئيسية</span></a>
+    <a href="destinations.html"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.200-7-11.500a7 7 0 0114 0C19 14.800 12 21 12 21z"/><circle cx="12" cy="9.500" r="2.500"/></svg><span>الوجهات</span></a>
+    <a href="map.html"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span>الخريطة</span></a>
+    <a href="programs.html"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><span>الرحلات</span></a>
+    <button type="button" id="bn-more"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><circle cx="5" cy="12" r="1.800"/><circle cx="12" cy="12" r="1.800"/><circle cx="19" cy="12" r="1.800"/></svg><span>المزيد</span></button>
+  </nav>
 
-  <!-- ===== وجهات مميزة ===== -->
-  <section class="section">
-    <div class="container">
-      <div class="section-head"><div><span class="kicker">معالم</span><h2>من قلاع الداخلية إلى سواحل الشرقية</h2></div><a class="more" href="destinations.html">كل الوجهات ←</a></div>
-      <div class="lm-strip" id="landmark-strip"></div>
-    </div>
-  </section>
-
-  <section class="section alt">
-    <div class="container">
-      <div class="section-head">
-        <div><span class="kicker">لا تفوّتها</span><h2>وجهات مميزة</h2></div>
-        <a class="btn dark" href="destinations.html">كل الوجهات ←</a>
-      </div>
-      <div class="grid" id="featured"></div>
-    </div>
-  </section>
-
-  <!-- ===== الخريطة ===== -->
-  <section class="section">
-    <div class="container">
-      <div class="section-head">
-        <div><span class="kicker">الخريطة التفاعلية</span><h2>كل الوجهات على الخريطة</h2></div>
-        <a class="btn dark" href="map.html">افتح الخريطة الكاملة ←</a>
-      </div>
-      <div class="map-box" id="homemap" style="height:440px"></div>
-      <p class="muted" style="margin-top:10px">اضغط على أي علامة لقراءة الوصف وفتح الاتجاهات في خرائط جوجل.</p>
-    </div>
-  </section>
-
-  <!-- ===== المحافظات ===== -->
-  <section class="section alt">
-    <div class="container">
-      <div class="section-head">
-        <div><span class="kicker">11 محافظة</span><h2>تصفّح حسب المحافظة</h2></div>
-        <a class="btn dark" href="governorates.html">تفاصيل المحافظات ←</a>
-      </div>
-      <div class="grid" id="gov-preview"></div>
-    </div>
-  </section>
-
-  <!-- ===== أقسام جديدة ===== -->
-  <section class="section alt">
-    <div class="container">
-      <div class="section-head"><div><span class="kicker">اكتشف أكثر</span><h2>حرف ومغامرة وبيئة وأمان</h2></div></div>
-      <div class="grid">
-        <a class="card" href="crafts.html"><div class="card-body"><h3>الحرف والأسواق</h3><p>الخنجر والفخار والسدو والأسواق التقليدية، وتطوير وتسويق الصناعة الحرفية ودليل التواصل.</p></div></a>
-        <a class="card" href="adventure.html"><div class="card-body"><h3>المغامرة في عُمان</h3><p>مشي جبلي وأودية وكثبان وغطس وتسلّق، بمستوى الصعوبة والمخاطر.</p></div></a>
-        <a class="card" href="eco.html"><div class="card-body"><h3>البيئة والتخييم</h3><p>حماية هوية الموقع، حاسبة الطاقة الشمسية للمخيم، وإعادة التدوير.</p></div></a>
-        <a class="card" href="safety.html"><div class="card-body"><h3>الأمان والطقس</h3><p>تنبؤ مخاطر الطقس لـ7 أيام ومعايير السلامة الوطنية والدولية وقوائم تحقق.</p></div></a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== الرحلة ===== -->
-  <section class="section">
-    <div class="container">
-      <div class="section-head">
-        <div><span class="kicker">قبل أن تتحرك</span><h2>الرحلة: طريقك خطوة بخطوة</h2></div>
-        <a class="btn" href="trip.html">خطّط رحلتك ←</a>
-      </div>
-      <p class="muted" style="max-width:640px">اختر من أين تنطلق وإلى أين، فنعرض لك الطريق والمساجد القريبة منه ومحطات الوقود والمدن والمحافظات التي ستمرّ بها.</p>
-    </div>
-  </section>
-
-  <!-- ===== الواقع الافتراضي ===== -->
-  <section class="section dark">
-    <div class="container">
-      <div class="section-head">
-        <div><span class="kicker">تقنية الواقع الافتراضي</span><h2>زُر عُمان من هاتفك بتقنية 360°</h2></div>
-        <a class="btn" href="vr.html">ابدأ الجولة الافتراضية</a>
-      </div>
-      <div class="how-grid">
-        <div class="how" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)">
-          <div class="n">1</div><h3>افتح الجولة</h3>
-          <p style="color:#b9c8d3">اختر وجهة من قائمة الجولات وسيُحمَّل المشهد الشامل مباشرة في المتصفح.</p>
-        </div>
-        <div class="how" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)">
-          <div class="n">2</div><h3>حرّك هاتفك</h3>
-          <p style="color:#b9c8d3">يستجيب المشهد لحركة هاتفك (الجيروسكوب) فتنظر حولك كأنك في المكان.</p>
-        </div>
-        <div class="how" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)">
-          <div class="n">3</div><h3>وضع النظارة</h3>
-          <p style="color:#b9c8d3">فعّل وضع VR ثم ضع الهاتف في نظارة كرتونية (Cardboard) لتجربة مجسّمة.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div id="site-footer"></div>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="js/data.js?v=92"></script>
-  <script src="data/dest-extra.js?v=92"></script>
-  <script src="js/dest-apply.js?v=92"></script>
-  <script src="js/history-data.js?v=92"></script>
-  <script src="js/exif.js?v=92"></script>
-  <script src="js/site-config.js?v=92"></script>
-  <script src="js/intro.js?v=92"></script>
-  <script src="js/common.js?v=92"></script>
-  <script src="data/text-edits.js?v=92"></script>
-  <script src="js/text-edits.js?v=92"></script>
-  <script src="js/currency.js?v=92" defer></script>
-  <script src="js/mapcore.js?v=92"></script>
-  <script src="js/home.js?v=92"></script>
+  <script src="js/data.js?v=93"></script>
+  <script src="data/dest-extra.js?v=93"></script>
+  <script src="js/dest-apply.js?v=93"></script>
+  <script src="js/exif.js?v=93"></script>
+  <script src="js/site-config.js?v=93"></script>
+  <script src="js/intro.js?v=93"></script>
+  <script src="js/common.js?v=93"></script>
+  <script src="data/text-edits.js?v=93"></script>
+  <script src="js/text-edits.js?v=93"></script>
+  <script src="js/currency.js?v=93" defer></script>
+  <script src="js/home.js?v=93"></script>
 </body>
 </html>

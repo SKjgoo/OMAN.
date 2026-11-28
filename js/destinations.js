@@ -55,4 +55,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderChips();
   render();
+  if (qs('focus')) $q.focus();
 });
