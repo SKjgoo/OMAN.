@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme')}catch(e){}if(!t){t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.setAttribute('data-theme',t)})();</script>
+  <title>صور المجتمع | اكتشف عُمان</title>
+  <meta name="description" content="شارك أجمل لحظاتك في ربوع عُمان وشاهد صور الزوار.">
+  <meta name="theme-color" content="#f7f2ea">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ar_OM">
+  <meta property="og:title" content="صور المجتمع | اكتشف عُمان">
+  <meta property="og:description" content="شارك أجمل لحظاتك في ربوع عُمان وشاهد صور الزوار.">
+  <meta property="og:image" content="images/grand-mosque.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="أرشدني">
+  <meta name="application-name" content="أرشدني">
+  <link rel="stylesheet" href="css/style.css?v=102">
+</head>
+<body class="has-rail" data-page="community">
+  <div id="site-header"></div>
+
+  <header class="cm-hero">
+    <div class="cm-hero-in">
+      <h1>صور المجتمع</h1>
+      <p>شارك أجمل لحظاتك في ربوع عُمان</p>
+      <button class="btn cm-add" id="cm-add" type="button">أضف صورتك ⬆</button>
+      <div class="cm-user" id="cm-user"></div>
+    </div>
+  </header>
+
+  <main class="cm-main">
+    <div class="cm-tools">
+      <input type="search" id="cm-q" placeholder="ابحث في صور المجتمع ..." aria-label="بحث">
+      <select id="cm-sort" aria-label="الترتيب"><option value="new">الأحدث</option><option value="likes">الأكثر إعجابًا</option></select>
+    </div>
+    <div class="chips" id="cm-cats"></div>
+    <p class="muted center" id="cm-msg"></p>
+    <div class="cm-grid" id="cm-grid"></div>
+  </main>
+
+  <dialog class="up-dlg" id="cm-auth"></dialog>
+  <dialog class="up-dlg" id="cm-up"></dialog>
+  <dialog class="up-dlg cm-view" id="cm-view"></dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="js/data.js?v=102"></script>
+  <script src="data/dest-extra.js?v=102"></script>
+  <script src="js/dest-apply.js?v=102"></script>
+  <script src="js/common.js?v=102"></script>
+  <script src="data/text-edits.js?v=102"></script>
+  <script src="js/text-edits.js?v=102"></script>
+  <script src="js/currency.js?v=102" defer></script>
+  <script src="js/community.js?v=102"></script>
+</body>
+</html>
