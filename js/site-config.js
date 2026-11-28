@@ -15,7 +15,7 @@ const SITE_CONFIG = {
     button: { label: 'خطّط رحلتك', href: 'trip.html' }
   },
   upload: {
-    email: '',   // بريدك: تصلك عليه الصور (عبر FormSubmit)
+    email: 'Osidy2010@gmail.com',   // بريدك: تصلك عليه الصور (عبر FormSubmit)
     max: 10,
     rules: ''
   }
