@@ -234,7 +234,8 @@ code{background:var(--surface-2);padding:.05em .4em;border-radius:6px;font-size:
 .chip.on{background:var(--text);color:var(--bg);border-color:var(--text)}
 .gov-actions{margin-top:auto;padding-top:10px;display:flex;gap:10px;flex-wrap:wrap}
 .gov-nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}
-.gov-list{display:grid;gap:22px}
+.gov-list{display:grid;gap:22px;grid-template-columns:minmax(0,1fr)}
+.gov-card{min-width:0}
 
 /* ---------- الفلاتر ---------- */
 .filters{
@@ -1014,9 +1015,9 @@ body[data-page="sos"] .hero h1,body[data-page="sos"] .hero p{text-shadow:0 2px 1
 .filters input[type=search]{border-radius:999px;padding:.8em 1.2em;background:var(--surface);box-shadow:0 4px 14px rgba(0,0,0,.06)}
 .chip{border-radius:999px}
 .chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
-.chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
-.chips::-webkit-scrollbar{display:none}
-.chips .chip{flex:none}
+#cats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+#cats::-webkit-scrollbar{display:none}
+#cats .chip{flex:none}
 #results.grid{grid-template-columns:1fr;gap:12px}
 @media (min-width:640px){#results.grid{grid-template-columns:repeat(2,1fr)}}
 @media (min-width:981px){#results.grid{grid-template-columns:repeat(3,1fr)}}
