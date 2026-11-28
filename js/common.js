@@ -105,9 +105,9 @@ if (onProxy()) {
     a.href = u.href;
   }, true);
 }
-(function(){var s=document.createElement('script');s.src='js/emergency.js?v=99';s.defer=true;document.head.appendChild(s);})();
+(function(){var s=document.createElement('script');s.src='js/emergency.js?v=100';s.defer=true;document.head.appendChild(s);})();
 if (isPack(getLang()) && !onProxy()) {
-  document.write('<script src="js/i18n-' + getLang() + '.js?v=99"><\/script><script src="js/i18n.js?v=99"><\/script>');
+  document.write('<script src="js/i18n-' + getLang() + '.js?v=100"><\/script><script src="js/i18n.js?v=100"><\/script>');
 }
 if (getLang() !== 'ar') {
   document.documentElement.lang = getLang();
@@ -350,7 +350,7 @@ function buildUploader(esc) {
       </label>
       <div class="up-prev" id="up-prev"></div>
       <label>اسمك<input id="up-name" autocomplete="name"></label>
-      <label>رقم للتواصل أو بريد (اختياري)<input id="up-contact" dir="ltr"></label>
+      <label>حساب إنستغرام (اختياري)<input id="up-contact" dir="ltr" placeholder="@username" autocapitalize="none" autocorrect="off"></label>
       <label>أين التُقطت الصور؟<input id="up-place"></label>
       <p class="up-msg" id="up-msg" aria-live="polite"></p>
       <div class="btn-row">
@@ -385,42 +385,45 @@ function buildUploader(esc) {
   });
   const textOf = () => {
     const name = $('up-name').value.trim(), contact = $('up-contact').value.trim(), place = $('up-place').value.trim();
-    return `صور من اكتشف عُمان\nالاسم: ${name}\nالتواصل: ${contact}\nالمكان: ${place}` +
+    return `صور من اكتشف عُمان\nالاسم: ${name}\nإنستغرام: ${contact}\nالمكان: ${place}` +
       (detected ? `\nالوجهة المكتشفة من GPS: ${detected.name} (${detected.id})\nالإحداثيات: ${detected.g.lat.toFixed(5)}, ${detected.g.lng.toFixed(5)}` : '') +
       `\nعدد الصور: ${files.length}`;
   };
-  if (navigator.canShare) {
-    const sb = document.createElement('button');
-    sb.type = 'button'; sb.className = 'btn light'; sb.id = 'up-share'; sb.textContent = 'مشاركة الصور مباشرة';
-    $('up-close').before(sb);
-    sb.addEventListener('click', async () => {
-      if (!files.length) { msg('اختر صورة واحدة على الأقل.'); return; }
-      try {
-        if (!navigator.canShare({ files })) { msg('جهازك لا يدعم مشاركة الصور من المتصفح، استخدم زر إرسال.'); return; }
-        await navigator.share({ files, title: 'صور من اكتشف عُمان', text: textOf() });
-        msg('اختر واتساب ثم الرقم ' + (U.whatsappDisplay || ''), true);
-      } catch (e) { if (!e || e.name !== 'AbortError') msg('تعذّرت المشاركة.'); }
-    });
+  /* ضغط الصورة قبل الإرسال حتى لا يتجاوز المجموع حد البريد (10 ميجا) */
+  async function shrink(f) {
+    try {
+      const bm = await createImageBitmap(f);
+      const k = Math.min(1, 1600 / Math.max(bm.width, bm.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k);
+      c.getContext('2d').drawImage(bm, 0, 0, c.width, c.height);
+      const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.82));
+      return blob ? new File([blob], (f.name || 'photo').replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' }) : f;
+    } catch (e) { return f; }
   }
   $('up-send').addEventListener('click', async () => {
     if (!files.length) { msg('اختر صورة واحدة على الأقل.'); return; }
+    if (!U.email) { msg('الإرسال غير مفعّل بعد. حاول لاحقًا.'); return; }
+    const btn = $('up-send'); btn.disabled = true;
     try {
-      if (U.endpoint) {
-        const fd = new FormData();
-        fd.append('message', textOf());
-        files.forEach((f, i) => fd.append('photo' + (i + 1), f, f.name));
-        msg('جارٍ الإرسال…', true);
-        const r = await fetch(U.endpoint, { method: 'POST', body: fd, headers: { Accept: 'application/json' } });
-        if (!r.ok) throw new Error('http ' + r.status);
-        msg('وصلتنا صورك، شكرًا لك!', true); return;
-      }
-      /* يتحوّل مباشرة إلى محادثة واتساب مع الرقم */
-      const text = textOf() + '\n\n(سأرفق الصور هنا)';
-      window.open(`https://wa.me/${U.whatsapp}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
-      msg('فُتحت محادثة واتساب. اضغط وأرفق صورك ثم أرسل.', true);
+      msg('جارٍ تجهيز الصور…', true);
+      const small = await Promise.all(files.map(shrink));
+      const fd = new FormData();
+      fd.append('_subject', 'صور جديدة من اكتشف عُمان');
+      fd.append('_captcha', 'false');
+      fd.append('_template', 'box');
+      fd.append('الاسم', $('up-name').value.trim());
+      fd.append('إنستغرام', $('up-contact').value.trim());
+      fd.append('المكان', $('up-place').value.trim());
+      fd.append('تفاصيل', textOf());
+      small.forEach((f, i) => fd.append('attachment', f, 'photo' + (i + 1) + '.jpg'));
+      msg('جارٍ الإرسال…', true);
+      await fetch('https://formsubmit.co/' + encodeURIComponent(U.email), { method: 'POST', body: fd, mode: 'no-cors' });
+      msg('وصلتنا صورك، شكرًا لك!', true);
     } catch (e) {
-      msg('تعذّر الإرسال التلقائي. أرسل صورك إلى واتساب ' + (U.whatsappDisplay || '') + ' يدويًا.');
+      msg('تعذّر الإرسال. تأكد من الاتصال وحاول مرة ثانية.');
     }
+    btn.disabled = false;
   });
 }
 
