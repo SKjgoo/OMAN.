@@ -1041,3 +1041,24 @@ body[data-page="sos"] .hero h1,body[data-page="sos"] .hero p{text-shadow:0 2px 1
 .trip-quick button span{color:var(--text)}
 .trip-quick button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
 .trip-quick button.on span{color:#fff}
+
+/* ===== ضبط أعلى الرئيسية على التصميم ===== */
+@media (max-width:980px){
+  .topbar .brand{order:1;margin-inline-end:auto}
+  .topbar .tb-search{order:2;margin-inline-start:0}
+  .topbar .menu-btn{order:3}
+  .hm-hero{min-height:clamp(240px,34vh,300px)}
+  .hm-hero-img{background-position:center 28%}
+  .hm-hero-in{padding:28px 0 26px}
+  .hm-hero h1{font-size:clamp(1.7rem,7vw,2.2rem)}
+  .hm-hero p{margin-bottom:12px;font-size:.92rem}
+  .hm-search input{padding:.55em .4em;font-size:1rem}
+  .hm-search button{width:38px;height:38px}
+  .hm-hero::after{height:44px}
+  .hm-grid{gap:10px;margin-bottom:20px}
+  .hm-sc{min-height:82px;padding:8px 4px}
+  .hm-sc svg{width:28px;height:28px}
+  .hm-sc span{font-size:.9rem}
+  body.has-bnav[data-page="home"] .support-fab,body.has-bnav[data-page="home"] .sos-fab{width:48px;height:48px}
+  body.has-bnav[data-page="home"] .sos-fab{bottom:calc(138px + env(safe-area-inset-bottom))}
+}
