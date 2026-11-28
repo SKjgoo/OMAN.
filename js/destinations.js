@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .replace(/[ً-ْـ]/g, '')   // إزالة التشكيل والتطويل
     .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
 
+  const wideCard = (d) => `<a class="hm-card wide cat-${d.cat}" href="destination.html?id=${d.id}" data-img="images/${d.id}.jpg">${d.vr ? '<i class="vrb">VR 360°</i>' : ''}<b>${d.name}</b><span><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 00-7 7c0 5.300 7 13 7 13s7-7.700 7-13a7 7 0 00-7-7zm0 9.500A2.500 2.500 0 1112 6.500a2.500 2.500 0 010 5z"/></svg>${govById(d.gov).name}</span></a>`;
   function render() {
     const q = normalize($q.value.trim());
     const list = DESTINATIONS.filter(d => {
@@ -39,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     $count.textContent = `عدد النتائج: ${list.length}`;
     $res.innerHTML = list.length
-      ? list.map(destCard).join('')
+      ? list.map(wideCard).join('')
       : '<div class="empty" style="grid-column:1/-1">لا توجد نتائج مطابقة. جرّب تغيير البحث أو الفلاتر.</div>';
     loadPhotos($res);
   }

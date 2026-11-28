@@ -105,9 +105,9 @@ if (onProxy()) {
     a.href = u.href;
   }, true);
 }
-(function(){var s=document.createElement('script');s.src='js/emergency.js?v=93';s.defer=true;document.head.appendChild(s);})();
+(function(){var s=document.createElement('script');s.src='js/emergency.js?v=94';s.defer=true;document.head.appendChild(s);})();
 if (isPack(getLang()) && !onProxy()) {
-  document.write('<script src="js/i18n-' + getLang() + '.js?v=93"><\/script><script src="js/i18n.js?v=93"><\/script>');
+  document.write('<script src="js/i18n-' + getLang() + '.js?v=94"><\/script><script src="js/i18n.js?v=94"><\/script>');
 }
 if (getLang() !== 'ar') {
   document.documentElement.lang = getLang();
@@ -272,6 +272,28 @@ function buildChrome() {
     const ls = header.querySelector('#lang-sel');
     if (ls) ls.addEventListener('change', () => setLang(ls.value));
   }
+  /* ---------- شريط التنقل السفلي (الجوال) ---------- */
+  if (page !== 'chat' && !document.querySelector('.bnav')) {
+    const S = (p) => `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+    const items = [
+      ['index.html', 'home', 'الرئيسية', S('<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>')],
+      ['destinations.html', 'dest', 'الوجهات', S('<path d="M12 21s-7-6.200-7-11.500a7 7 0 0114 0C19 14.800 12 21 12 21z"/><circle cx="12" cy="9.500" r="2.500"/>')],
+      ['map.html', 'map', 'الخريطة', S('<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>')],
+      ['programs.html', 'programs', 'رحلاتي', S('<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>')]
+    ];
+    const nav = document.createElement('nav');
+    nav.className = 'bnav';
+    nav.setAttribute('aria-label', 'التنقل السفلي');
+    nav.innerHTML = items.map(i => `<a href="${i[0]}" class="${i[1] === page ? 'on' : ''}" ${i[1] === page ? 'aria-current="page"' : ''}>${i[3]}<span>${i[2]}</span></a>`).join('') +
+      `<button type="button" id="bn-more">${S('<path d="M4 8h16M4 16h10"/>')}<span>المزيد</span></button>`;
+    document.body.appendChild(nav);
+    document.body.classList.add('has-bnav');
+    nav.querySelector('#bn-more').addEventListener('click', () => {
+      const b = document.querySelector('.menu-btn');
+      if (b && getComputedStyle(b).display !== 'none') b.click();
+    });
+  }
+
   const footer = document.getElementById('site-footer');
   if (footer) {
     footer.innerHTML = `

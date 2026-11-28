@@ -10,14 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     </a>`).join('');
   loadPhotos(box);
 
-  /* زر المزيد يفتح القائمة الجانبية */
-  const more = document.getElementById('bn-more');
-  if (more) more.addEventListener('click', () => {
-    const b = document.querySelector('.menu-btn');
-    if (b && getComputedStyle(b).display !== 'none') b.click();
-    else location.href = 'governorates.html';
-  });
-
   /* أيقونة بحث في الشريط العلوي */
   const tb = document.querySelector('.topbar');
   if (tb) tb.insertAdjacentHTML('beforeend', '<a class="tb-search" href="destinations.html?focus=1" aria-label="بحث"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></a>');

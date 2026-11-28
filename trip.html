@@ -9,7 +9,7 @@
   <meta name="theme-color" content="#f7f2ea">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="ar_OM">
@@ -24,29 +24,23 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="أرشدني">
   <meta name="application-name" content="أرشدني">
-  <link rel="stylesheet" href="css/style.css?v=93">
+  <link rel="stylesheet" href="css/style.css?v=94">
 </head>
 <body class="has-rail" data-page="trip">
   <div id="site-header"></div>
 
-  <section class="hero page-hero">
-    <div class="container">
-      <span class="eyebrow">مخطّط الطريق</span>
-      <h1>الرحلة</h1>
-      <p class="lead">من أين تنطلق وإلى أين؟ سنعرض لك الطريق، والمساجد القريبة منه، ومحطات الوقود، والمدن والمحافظات التي ستمرّ بها.</p>
-    </div>
-  </section>
+  <header class="pg-title trip-title"><svg viewBox="0 0 24 24" width="54" height="54" fill="none" stroke="#3a75d0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-5-4.500-5-8.500a5 5 0 0110 0C17 16.500 12 21 12 21z" transform="translate(5 -9) scale(.8)"/><circle cx="6" cy="18" r="2.500"/><path d="M8.500 18H14a3 3 0 000-6h-2"/></svg><h1>خطّط رحلتك</h1><p>اختر نقطة الانطلاق والوجهة وسيعرض لك أفضل مسار، والمساجد ومحطات الوقود والمطاعم على الطريق.</p></header>
 
-  <section class="container" style="padding-bottom:60px">
+  <section class="container trip-wrap" style="padding-bottom:60px">
     <form class="trip-form" id="trip-form">
-      <label>من أين تنطلق؟
+      <label>من
         <select id="from" required></select>
       </label>
       <button class="btn light swap" id="swap" type="button" title="تبديل نقطة الانطلاق والوصول" aria-label="تبديل">⇄</button>
-      <label>إلى أين؟
+      <label>إلى
         <select id="to" required></select>
       </label>
-      <button class="btn" type="submit">اعرض الرحلة</button>
+      <button class="btn" type="submit">عرض المسار ➤</button>
     </form>
     <div class="trip-sub">
       <button class="btn small light" id="useloc" type="button">انطلق من موقعي الحالي</button>
@@ -96,19 +90,19 @@
   <div id="site-footer"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="js/data.js?v=93"></script>
-  <script src="data/dest-extra.js?v=93"></script>
-  <script src="js/dest-apply.js?v=93"></script>
-  <script src="js/places.js?v=93"></script>
-  <script src="js/crafts-data.js?v=93"></script>
-  <script src="js/lodging-data.js?v=93"></script>
-  <script src="js/risk.js?v=93"></script>
-  <script src="js/common.js?v=93"></script>
-  <script src="data/text-edits.js?v=93"></script>
-  <script src="js/text-edits.js?v=93"></script>
-  <script src="js/currency.js?v=93" defer></script>
-  <script src="js/mapcore.js?v=93"></script>
-  <script src="js/trip.js?v=93"></script>
-  <script src="js/trip-plan.js?v=93"></script>
+  <script src="js/data.js?v=94"></script>
+  <script src="data/dest-extra.js?v=94"></script>
+  <script src="js/dest-apply.js?v=94"></script>
+  <script src="js/places.js?v=94"></script>
+  <script src="js/crafts-data.js?v=94"></script>
+  <script src="js/lodging-data.js?v=94"></script>
+  <script src="js/risk.js?v=94"></script>
+  <script src="js/common.js?v=94"></script>
+  <script src="data/text-edits.js?v=94"></script>
+  <script src="js/text-edits.js?v=94"></script>
+  <script src="js/currency.js?v=94" defer></script>
+  <script src="js/mapcore.js?v=94"></script>
+  <script src="js/trip.js?v=94"></script>
+  <script src="js/trip-plan.js?v=94"></script>
 </body>
 </html>
