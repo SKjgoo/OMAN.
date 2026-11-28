@@ -105,9 +105,9 @@ if (onProxy()) {
     a.href = u.href;
   }, true);
 }
-(function(){var s=document.createElement('script');s.src='js/emergency.js?v=97';s.defer=true;document.head.appendChild(s);})();
+(function(){var s=document.createElement('script');s.src='js/emergency.js?v=98';s.defer=true;document.head.appendChild(s);})();
 if (isPack(getLang()) && !onProxy()) {
-  document.write('<script src="js/i18n-' + getLang() + '.js?v=97"><\/script><script src="js/i18n.js?v=97"><\/script>');
+  document.write('<script src="js/i18n-' + getLang() + '.js?v=98"><\/script><script src="js/i18n.js?v=98"><\/script>');
 }
 if (getLang() !== 'ar') {
   document.documentElement.lang = getLang();
@@ -284,14 +284,9 @@ function buildChrome() {
     const nav = document.createElement('nav');
     nav.className = 'bnav';
     nav.setAttribute('aria-label', 'التنقل السفلي');
-    nav.innerHTML = items.map(i => `<a href="${i[0]}" class="${i[1] === page ? 'on' : ''}" ${i[1] === page ? 'aria-current="page"' : ''}>${i[3]}<span>${i[2]}</span></a>`).join('') +
-      `<button type="button" id="bn-more">${S('<path d="M4 8h16M4 16h10"/>')}<span>المزيد</span></button>`;
+    nav.innerHTML = items.map(i => `<a href="${i[0]}" class="${i[1] === page ? 'on' : ''}" ${i[1] === page ? 'aria-current="page"' : ''}>${i[3]}<span>${i[2]}</span></a>`).join('');
     document.body.appendChild(nav);
     document.body.classList.add('has-bnav');
-    nav.querySelector('#bn-more').addEventListener('click', () => {
-      const b = document.querySelector('.menu-btn');
-      if (b && getComputedStyle(b).display !== 'none') b.click();
-    });
   }
 
   const footer = document.getElementById('site-footer');
